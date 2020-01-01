@@ -1,0 +1,7 @@
+.breadcrumb-item {
+    cursor: pointer;
+}
+
+.breadcrumb-item.selected {
+    font-weight: bold;
+}

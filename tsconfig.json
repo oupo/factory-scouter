@@ -1,0 +1,10 @@
+{
+    "files": [
+        "ts/main.ts",
+        "ts/data.ts",
+    ],
+    "compilerOptions": {
+        "noImplicitAny": true,
+        "target": "es5"
+    }
+}
