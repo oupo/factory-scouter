@@ -1224,7 +1224,12 @@ var POKEMON_NAME_TO_ID = {};
 data_1.POKEMON_NAMES.forEach(function (name, i) {
     POKEMON_NAME_TO_ID[name] = i;
 });
-console.log(predictor_1.Predictor.predict(new prng_1.PRNG(0)));
+console.log(JSON.stringify(predictor_1.Predictor.predict(new prng_1.PRNG(0)).map(function (x) {
+    var prng = x[0], enemies = x[1], skipped = x[2], starters = x[3];
+    return [starters.map(function (e) { return e.id; }),
+        enemies.map(function (entries) { return entries.map(function (e) { return e.id; }); }),
+        skipped.map(function (entries) { return entries.map(function (e) { return e.id; }); })];
+})));
 function pokemon_image(id) {
     return "http://veekun.com/dex/media/pokemon/icons/" + id + ".png";
 }

@@ -8,7 +8,12 @@ POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
 
-console.log(Predictor.predict(new PRNG(0)));
+console.log(JSON.stringify(Predictor.predict(new PRNG(0)).map((x) => {
+    let [prng, enemies, skipped, starters] = x;
+    return [starters.map((e) => e.id),
+            enemies.map((entries) => entries.map((e) => e.id)),
+            skipped.map((entries) => entries.map((e) => e.id))];
+})));
 
 function pokemon_image(id: number) {
     return `http://veekun.com/dex/media/pokemon/icons/${id}.png`;
