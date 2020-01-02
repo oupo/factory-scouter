@@ -5,3 +5,7 @@
 .breadcrumb-item.selected {
     font-weight: bold;
 }
+
+h2 {
+    margin-top: 0.5rem;
+}

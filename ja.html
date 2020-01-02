@@ -20,29 +20,31 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li class="nav-item active" id="nav-item-search">
                     <a class="nav-link" href="#">検索</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="nav-item-seed">
                     <a class="nav-link" href="#">seed入力</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" id="nav-item-result">
                     <a class="nav-link" href="#">結果</a>
                 </li>
             </ul>
         </div>
     </nav>
-    <div class="container">
+    <div class="container" id="search">
         <h2>検索</h2>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item selected" id="breadcrumb-round">周など</li>
                 <li class="breadcrumb-item" id="breadcrumb-poke">ポケモン</li>
+                <li class="breadcrumb-item" id="breadcrumb-entries">ポケモンの型</li>
+                <li class="breadcrumb-item" id="breadcrumb-id">ID</li>
             </ol>
         </nav>
         <div class="subcontainer" id="round-form">
             <p>
-                <input type="text" id="round_input" size="2" value="1"> 周目
+                <input type="text" name="round_input" size="2" value="1"> 周目
                 <label><input type="radio" name="level" value="50" checked>Lv50</label>
                 <label><input type="radio" name="level" value="100">オープンレベル</label>
             </p>
@@ -62,7 +64,37 @@
             <p><input type="text" id="poke5" size="10" value=""><span id="pokeimg5"></span></p>
             <button type="button" class="btn btn-primary" id="ok-poke">OK</button>
         </div>
+        <div class="subcontainer" id="entries-form" style="display:none">
+            <p>ポケモンの型を選択してください</p>
+            <button type="button" class="btn btn-primary" id="ok-entries">OK</button>
+        </div>
+        <div class="subcontainer" id="id-form" style="display:none">
+            <p>ポケモンのIDを入力してください</p>
+            <p>1匹目(<span id="poke0-name"></span>)のID: <input type="text" id="id0" size="10" value=""></p>
+            <p id="poke4id" style="display:none">5匹目(<span id="poke4-name"></span>)のID: <input type="text" id="id4"
+                    size="10" value=""></p>
+            <p id="poke5id" style="display:none">6匹目(<span id="poke5-name"></span>)のID: <input type="text" id="id5"
+                    size="10" value=""></p>
+            <button type="button" class="btn btn-primary" id="ok-id">OK</button>
+        </div>
     </div>
+    <div class="container" id="seed-form" style="display:none">
+        <h2>seed入力</h2>
+        <p>
+            <input type="text" name="round_input" size="2" value="1"> 周目
+            <label><input type="radio" name="level" value="50" checked>Lv50</label>
+            <label><input type="radio" name="level" value="100">オープンレベル</label>
+        </p>
+        <p>
+            <label><input type="radio" name="version" value="platinum">プラチナ</label>
+            <label><input type="radio" name="version" value="hgss" checked>HGSS</label>
+        </p>
+        <p>seed: <input type="text" id="seed" size="8" value="0x00000000"></p>
+        <p>消費数: <input type="text" id="seed" size="2" value="0"></p>
+        <button type="button" class="btn btn-primary" id="ok-seed">OK</button>
+    </div>
+    <div class="container" id="result" style="display:none">
+        <h2>結果</h2>
     </div>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
         crossorigin="anonymous"></script>
