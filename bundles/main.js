@@ -97,7 +97,7 @@
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NSTARTERS = 6;
-exports.NBATTLES = 7;
+exports.NBATTLES = 5;
 exports.NPARTY = 3;
 
 
@@ -1224,18 +1224,52 @@ var POKEMON_NAME_TO_ID = {};
 data_1.POKEMON_NAMES.forEach(function (name, i) {
     POKEMON_NAME_TO_ID[name] = i;
 });
+function create_svg() {
+    return $("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'/>");
+}
 function result_to_dom_node(result) {
-    var ul = $("<ul />");
+    var svg = create_svg();
+    var y = 0;
+    var width = 0;
     for (var _i = 0, result_1 = result; _i < result_1.length; _i++) {
         var res = result_1[_i];
-        var li = $("<li />");
-        for (var i = 0; i < 3; i++) {
-            li.append($("<img/>").attr("src", pokemon_image(res.chosen[i].pokemon)));
-        }
-        ul.append(li);
-        ul.append(result_to_dom_node(res.children));
+        var svg1 = entries_to_dom_node(res.chosen);
+        svg1.setAttribute("y", String(y));
+        svg.append(svg1);
+        var svg2 = result_to_dom_node(res.children);
+        svg2.setAttribute("x", String(WIDTH * 3 + 15));
+        svg2.setAttribute("y", String(y));
+        svg.append(svg2);
+        width = Math.max(width, WIDTH * 3 + 15 + Number(svg2.getAttribute("width")));
+        y += Math.max(HEIGHT, Number(svg2.getAttribute("height"))) + 5;
     }
-    return ul.get(0);
+    svg.attr("width", width);
+    svg.attr("height", y);
+    return svg.get(0);
+}
+var WIDTH = 40;
+var HEIGHT = 30;
+function entries_to_dom_node(entries) {
+    var w = WIDTH * 3;
+    var h = HEIGHT;
+    var svg = create_svg().attr("width", w).attr("height", h);
+    var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('height', String(h));
+    rect.setAttribute('width', String(w));
+    rect.setAttribute('x', '0');
+    rect.setAttribute('y', '0');
+    rect.setAttribute('style', 'fill: #cccccc');
+    svg.append(rect);
+    for (var i = 0; i < entries.length; i++) {
+        var image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        image.setAttribute('height', String(HEIGHT));
+        image.setAttribute('width', String(WIDTH));
+        image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pokemon_image(entries[i].pokemon));
+        image.setAttribute('x', String(WIDTH * i));
+        image.setAttribute('y', '0');
+        svg.append(image);
+    }
+    return svg.get(0);
 }
 $("#result-box").empty().append(result_to_dom_node(predictor_1.Predictor.predict(new prng_1.PRNG(0))));
 function pokemon_image(id) {

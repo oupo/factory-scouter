@@ -1,5 +1,6 @@
 import {POKEMON_NAMES} from './data';
 import {PRNG} from './prng';
+import {Entry} from './entry';
 import {FactoryHelper} from './factory-helper';
 import {Predictor, PredictResultNode} from './predictor';
 
@@ -8,17 +9,54 @@ POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
 
+function create_svg() {
+    return $("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'/>");
+}
+
 function result_to_dom_node(result: PredictResultNode[]) {
-    let ul = $("<ul />");
+    let svg = create_svg();
+    let y = 0;
+    let width = 0;
     for (let res of result) {
-        let li = $("<li />");
-        for (let i = 0; i < 3; i ++) {
-            li.append($("<img/>").attr("src", pokemon_image(res.chosen[i].pokemon)));
-        }
-        ul.append(li);
-        ul.append(result_to_dom_node(res.children));
-    } 
-    return ul.get(0);
+        let svg1 = entries_to_dom_node(res.chosen);
+        svg1.setAttribute("y", String(y));
+        svg.append(svg1);
+        let svg2 = result_to_dom_node(res.children);
+        svg2.setAttribute("x", String(WIDTH * 3 + 15));
+        svg2.setAttribute("y", String(y));
+        svg.append(svg2);
+        width = Math.max(width, WIDTH * 3 + 15 + Number(svg2.getAttribute("width")));
+        y += Math.max(HEIGHT, Number(svg2.getAttribute("height"))) + 5;
+    }
+    svg.attr("width", width);
+    svg.attr("height", y);
+    return svg.get(0);
+}
+
+const WIDTH = 40;
+const HEIGHT = 30;
+
+function entries_to_dom_node(entries: Entry[]) {
+    let w = WIDTH * 3;
+    let h = HEIGHT;
+    let svg = create_svg().attr("width", w).attr("height", h);
+    var rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    rect.setAttribute('height', String(h));
+    rect.setAttribute('width', String(w));
+    rect.setAttribute('x', '0');
+    rect.setAttribute('y', '0');
+    rect.setAttribute('style', 'fill: #cccccc');
+    svg.append(rect);
+    for (let i = 0; i < entries.length; i ++) {
+        var image = document.createElementNS('http://www.w3.org/2000/svg','image');
+        image.setAttribute('height', String(HEIGHT));
+        image.setAttribute('width', String(WIDTH));
+        image.setAttributeNS('http://www.w3.org/1999/xlink','href',pokemon_image(entries[i].pokemon));
+        image.setAttribute('x', String(WIDTH * i));
+        image.setAttribute('y', '0');
+        svg.append(image);
+    }
+    return svg.get(0);
 }
 
 $("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))));
