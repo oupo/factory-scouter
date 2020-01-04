@@ -13,28 +13,53 @@ function create_svg() {
     return $("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'/>");
 }
 
-function result_to_dom_node(result: PredictResultNode[]) {
+const WIDTH = 40;
+const HEIGHT = 30;
+
+function result_to_dom_node(result: PredictResultNode) {
     let svg = create_svg();
     let y = 0;
-    let width = 0;
-    for (let res of result) {
-        let svg1 = entries_to_dom_node(res.chosen);
-        svg1.setAttribute("y", String(y));
-        svg.append(svg1);
-        let svg2 = result_to_dom_node(res.children);
+    let width = WIDTH * 3;
+    let svg1 = entries_to_dom_node(result.chosen);
+    svg1.setAttribute("y", String(y));
+    svg.append(svg1);
+    let n = result.children.length;
+    addLine(svg.get(0), WIDTH * 3, HEIGHT / 2, WIDTH * 3 + 15, HEIGHT / 2);
+    let lasty = 0;
+    for (let i = 0; i < n; i ++) {
+        let child = result.children[i];
+        if (i > 0) addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2);
+        lasty = y + HEIGHT / 2;
+        let svg2 = result_to_dom_node(child);
         svg2.setAttribute("x", String(WIDTH * 3 + 15));
         svg2.setAttribute("y", String(y));
         svg.append(svg2);
         width = Math.max(width, WIDTH * 3 + 15 + Number(svg2.getAttribute("width")));
         y += Math.max(HEIGHT, Number(svg2.getAttribute("height"))) + 5;
     }
+    addLine(svg.get(0), WIDTH * 3 + 7.5, HEIGHT / 2, WIDTH * 3 + 7.5, lasty);
+
     svg.attr("width", width);
-    svg.attr("height", y);
+    svg.attr("height", Math.max(y, HEIGHT));
     return svg.get(0);
 }
 
-const WIDTH = 40;
-const HEIGHT = 30;
+function addCurve(svg: HTMLElement, x1: number, y1: number, x2: number, y2: number) {
+    addLine(svg, x1, y1, (x1 + x2) / 2, y1);
+    addLine(svg, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2);
+    addLine(svg, (x1 + x2) / 2, y2, x2, y2);
+}
+
+function addLine(svg: HTMLElement, x1: number, y1: number, x2: number, y2: number) {
+    let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute("x1", String(x1));
+    line.setAttribute("y1", String(y1));
+    line.setAttribute("x2", String(x2));
+    line.setAttribute("y2", String(y2));
+    line.setAttribute("stroke", "black");
+    line.setAttribute("stroke-width", "1");
+    svg.appendChild(line);
+}
 
 function entries_to_dom_node(entries: Entry[]) {
     let w = WIDTH * 3;
@@ -59,7 +84,7 @@ function entries_to_dom_node(entries: Entry[]) {
     return svg.get(0);
 }
 
-$("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))));
+$("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))[0]));
 
 function pokemon_image(id: number) {
     return `http://veekun.com/dex/media/pokemon/icons/${id}.png`;

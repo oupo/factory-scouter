@@ -1227,28 +1227,50 @@ data_1.POKEMON_NAMES.forEach(function (name, i) {
 function create_svg() {
     return $("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'/>");
 }
+var WIDTH = 40;
+var HEIGHT = 30;
 function result_to_dom_node(result) {
     var svg = create_svg();
     var y = 0;
-    var width = 0;
-    for (var _i = 0, result_1 = result; _i < result_1.length; _i++) {
-        var res = result_1[_i];
-        var svg1 = entries_to_dom_node(res.chosen);
-        svg1.setAttribute("y", String(y));
-        svg.append(svg1);
-        var svg2 = result_to_dom_node(res.children);
+    var width = WIDTH * 3;
+    var svg1 = entries_to_dom_node(result.chosen);
+    svg1.setAttribute("y", String(y));
+    svg.append(svg1);
+    var n = result.children.length;
+    addLine(svg.get(0), WIDTH * 3, HEIGHT / 2, WIDTH * 3 + 15, HEIGHT / 2);
+    var lasty = 0;
+    for (var i = 0; i < n; i++) {
+        var child = result.children[i];
+        if (i > 0)
+            addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2);
+        lasty = y + HEIGHT / 2;
+        var svg2 = result_to_dom_node(child);
         svg2.setAttribute("x", String(WIDTH * 3 + 15));
         svg2.setAttribute("y", String(y));
         svg.append(svg2);
         width = Math.max(width, WIDTH * 3 + 15 + Number(svg2.getAttribute("width")));
         y += Math.max(HEIGHT, Number(svg2.getAttribute("height"))) + 5;
     }
+    addLine(svg.get(0), WIDTH * 3 + 7.5, HEIGHT / 2, WIDTH * 3 + 7.5, lasty);
     svg.attr("width", width);
-    svg.attr("height", y);
+    svg.attr("height", Math.max(y, HEIGHT));
     return svg.get(0);
 }
-var WIDTH = 40;
-var HEIGHT = 30;
+function addCurve(svg, x1, y1, x2, y2) {
+    addLine(svg, x1, y1, (x1 + x2) / 2, y1);
+    addLine(svg, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2);
+    addLine(svg, (x1 + x2) / 2, y2, x2, y2);
+}
+function addLine(svg, x1, y1, x2, y2) {
+    var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute("x1", String(x1));
+    line.setAttribute("y1", String(y1));
+    line.setAttribute("x2", String(x2));
+    line.setAttribute("y2", String(y2));
+    line.setAttribute("stroke", "black");
+    line.setAttribute("stroke-width", "1");
+    svg.appendChild(line);
+}
 function entries_to_dom_node(entries) {
     var w = WIDTH * 3;
     var h = HEIGHT;
@@ -1271,7 +1293,7 @@ function entries_to_dom_node(entries) {
     }
     return svg.get(0);
 }
-$("#result-box").empty().append(result_to_dom_node(predictor_1.Predictor.predict(new prng_1.PRNG(0))));
+$("#result-box").empty().append(result_to_dom_node(predictor_1.Predictor.predict(new prng_1.PRNG(0))[0]));
 function pokemon_image(id) {
     return "http://veekun.com/dex/media/pokemon/icons/" + id + ".png";
 }
