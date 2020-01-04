@@ -1224,12 +1224,20 @@ var POKEMON_NAME_TO_ID = {};
 data_1.POKEMON_NAMES.forEach(function (name, i) {
     POKEMON_NAME_TO_ID[name] = i;
 });
-console.log(JSON.stringify(predictor_1.Predictor.predict(new prng_1.PRNG(0)).map(function (x) {
-    var prng = x[0], enemies = x[1], skipped = x[2], starters = x[3];
-    return [starters.map(function (e) { return e.id; }),
-        enemies.map(function (entries) { return entries.map(function (e) { return e.id; }); }),
-        skipped.map(function (entries) { return entries.map(function (e) { return e.id; }); })];
-})));
+function result_to_dom_node(result) {
+    var ul = $("<ul />");
+    for (var _i = 0, result_1 = result; _i < result_1.length; _i++) {
+        var res = result_1[_i];
+        var li = $("<li />");
+        for (var i = 0; i < 3; i++) {
+            li.append($("<img/>").attr("src", pokemon_image(res.chosen[i].pokemon)));
+        }
+        ul.append(li);
+        ul.append(result_to_dom_node(res.children));
+    }
+    return ul.get(0);
+}
+$("#result-box").empty().append(result_to_dom_node(predictor_1.Predictor.predict(new prng_1.PRNG(0))));
 function pokemon_image(id) {
     return "http://veekun.com/dex/media/pokemon/icons/" + id + ".png";
 }
@@ -1362,16 +1370,17 @@ var Predictor = /** @class */ (function () {
     Predictor.prototype.predict0 = function (prng, enemies, skipped, starters) {
         var _this = this;
         if (enemies.length == constant_1.NBATTLES) {
-            return [[prng, enemies, skipped, starters]];
+            return [];
         }
         var unchoosable = enemies[enemies.length - 1] || starters;
         var maybe_players = __spreadArrays(starters, util_1.Util.arrayFlatten(enemies.slice(0, -1)));
         var battle_index = enemies.length + 1;
         var results = OneEnemyPredictor.predict(prng, unchoosable, maybe_players, battle_index);
-        return util_1.Util.arrayFlatten(results.map(function (result) {
+        return results.map(function (result) {
             var prngp = result[0], chosen = result[1], skippedp = result[2];
-            return _this.predict0(prngp, __spreadArrays(enemies, [chosen]), __spreadArrays(skipped, [skippedp]), starters);
-        }));
+            var children = _this.predict0(prngp, __spreadArrays(enemies, [chosen]), __spreadArrays(skipped, [skippedp]), starters);
+            return { prng: prngp, chosen: chosen, skipped: skippedp, children: children };
+        });
     };
     return Predictor;
 }());

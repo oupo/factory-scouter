@@ -1,19 +1,27 @@
 import {POKEMON_NAMES} from './data';
 import {PRNG} from './prng';
 import {FactoryHelper} from './factory-helper';
-import {Predictor} from './predictor';
+import {Predictor, PredictResultNode} from './predictor';
 
 let POKEMON_NAME_TO_ID: { [key: string]: number; }= {};
 POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
 
-console.log(JSON.stringify(Predictor.predict(new PRNG(0)).map((x) => {
-    let [prng, enemies, skipped, starters] = x;
-    return [starters.map((e) => e.id),
-            enemies.map((entries) => entries.map((e) => e.id)),
-            skipped.map((entries) => entries.map((e) => e.id))];
-})));
+function result_to_dom_node(result: PredictResultNode[]) {
+    let ul = $("<ul />");
+    for (let res of result) {
+        let li = $("<li />");
+        for (let i = 0; i < 3; i ++) {
+            li.append($("<img/>").attr("src", pokemon_image(res.chosen[i].pokemon)));
+        }
+        ul.append(li);
+        ul.append(result_to_dom_node(res.children));
+    } 
+    return ul.get(0);
+}
+
+$("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))));
 
 function pokemon_image(id: number) {
     return `http://veekun.com/dex/media/pokemon/icons/${id}.png`;

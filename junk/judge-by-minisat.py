@@ -32,10 +32,11 @@ with open("factory-data.csv", "r") as f:
 with open("data.json", "r") as f:
     data = json.load(f)
 
-data = [data[0]]
+#data = [data[0]]
 choose = [[0, 1, 2], [0, 1, 3], [0, 1, 4], [0, 1, 5], [0, 2, 3], [0, 2, 4], [0, 2, 5], [0, 3, 4], [0, 3, 5], [0, 4, 5], [1, 2, 3], [1, 2, 4], [1, 2, 5], [1, 3, 4], [1, 3, 5], [1, 4, 5], [2, 3, 4], [2, 3, 5], [2, 4, 5], [3, 4, 5]]
 
 for number, d in enumerate(data):
+    variable_count = 0
     [starters, enemies, skipped] = d
     
     # 例) starter[0]: スターターの0匹目と1匹目と2匹目を選出
@@ -204,6 +205,7 @@ for number, d in enumerate(data):
                     if collide(entry, entry2):
                         clause.append(player_has[x][y][z])
 
-    print('p cnf ' + str(variable_count) + ' ' + str(len(clauses)))
-    for clause in clauses:
-        print(' '.join(clause + ['0']))
+    with open("data"+str(number)+".cnf", "w") as f:
+        print('p cnf ' + str(variable_count) + ' ' + str(len(clauses)), file=f)
+        for clause in clauses:
+            print(' '.join(clause + ['0']), file=f)

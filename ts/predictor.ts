@@ -17,21 +17,30 @@ export class Predictor {
 		return this.predict0(prngp, [], [], starters);
 	}
 
-	predict0(prng: PRNG, enemies: Entry[][], skipped: Entry[][], starters: Entry[]): [PRNG, Entry[][], Entry[][], Entry[]][] {
+	predict0(prng: PRNG, enemies: Entry[][], skipped: Entry[][], starters: Entry[]): PredictResultNode[] {
 		if (enemies.length == NBATTLES) {
-			return [[prng, enemies, skipped, starters]];
+			return [];
 		}
 		let unchoosable = enemies[enemies.length - 1] || starters;
 		let maybe_players = [...starters, ...Util.arrayFlatten(enemies.slice(0, -1))];
 		let battle_index = enemies.length + 1;
 		let results = OneEnemyPredictor.predict(prng, unchoosable, maybe_players, battle_index);
-		return Util.arrayFlatten(results.map(result => {
+		
+		return results.map(result => {
             let [prngp, chosen, skippedp] = result;
-			return this.predict0(prngp, [...enemies, chosen], [...skipped, skippedp], starters);
-		}));
+			let children = this.predict0(prngp, [...enemies, chosen], [...skipped, skippedp], starters);
+			return {prng: prngp, chosen: chosen, skipped: skippedp, children: children};
+		});
+
 	}
 }
 
+export interface PredictResultNode {
+	prng: PRNG;
+	chosen: Entry[];
+	skipped: Entry[];
+	children: PredictResultNode[];
+}
 
 export class OneEnemyPredictor {
     unchoosable: Entry[];
