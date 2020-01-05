@@ -9,3 +9,13 @@
 h2 {
     margin-top: 0.5rem;
 }
+
+#tooltip {
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: 1px solid #000;
+	padding: 3px;
+	background: #ffc;
+	font-size: 80%;
+}

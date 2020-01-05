@@ -1,6 +1,6 @@
-import {POKEMON_NAMES} from './data';
+import {POKEMON_NAMES, ITEM_NAMES, NATURE_NAMES, MOVE_NAMES} from './data';
 import {PRNG} from './prng';
-import {Entry} from './entry';
+import {ALL_ENTRIES, Entry} from './entry';
 import {FactoryHelper} from './factory-helper';
 import {Predictor, PredictResultNode} from './predictor';
 
@@ -58,7 +58,8 @@ function addLine(svg: HTMLElement, x1: number, y1: number, x2: number, y2: numbe
 function entries_to_dom_node(entries: Entry[]) {
     let w = WIDTH * 3;
     let h = HEIGHT;
-    let svg = create_svg().attr("width", w).attr("height", h);
+    let svg = create_svg().attr("width", w).attr("height", h).addClass("entries");
+    svg.attr("data-entries", entries.map((x) => x.id).join(","));
     var rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
     rect.setAttribute('height', String(h));
     rect.setAttribute('width', String(w));
@@ -83,9 +84,52 @@ function entries_to_dom_node(entries: Entry[]) {
 }
 
 $("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))[0]));
+$("#result-box svg.entries").mouseenter((e) => {
+    let svg = e.currentTarget;
+    let ids = (svg.getAttribute("data-entries")).split(",").map(x => Number(x));
+    $('#tooltip').remove();
+    let $tooltip = $("<div id='tooltip' />");
+    let $table = $("<table />");
+    $tooltip.append($table);
+    for (let id of ids) {
+        let entry = ALL_ENTRIES[id];
+        let pokemon = entry.pokemon;
+        let item = entry.item;
+        let nature = entry.nature;
+        let $tr = $("<tr/>");
+        $tr.append($("<td/>").append($("<img />").attr("src", pokemon_image_big(pokemon))));
+        $tr.append($("<td/>").append($("<b />").text(POKEMON_NAMES[pokemon])).append($("<span/>").text(" " + ITEM_NAMES[item] + " " + NATURE_NAMES[nature] + " " + entry.effort))
+        .append("<br/>").append($("<span />").text(entry.moves.map((x: number) => MOVE_NAMES[x]).join(" "))));
+        $table.append($tr);
+    }
+    $("#result-box").append($tooltip);
+    resize_tooltip(svg, $tooltip.get(0));
+    $tooltip.mouseleave((e) => {
+        if (!svg.contains(<Node>e.relatedTarget)) {
+            $('#tooltip').hide();
+        }
+    });
+}).mouseleave((e) => {
+    let tooltip = $('#tooltip').get(0);
+    if (!tooltip.contains(<Node>e.relatedTarget)) {
+        $('#tooltip').hide();
+    }
+});
+
+function resize_tooltip(button: HTMLElement, tooltip: HTMLElement) {
+    let buttonRect = button.getBoundingClientRect();
+    let tooltipRect = tooltip.getBoundingClientRect();
+    $(tooltip).css("left", (buttonRect.left + window.scrollX) + "px");
+    $(tooltip).css("top", (buttonRect.top + window.scrollY + buttonRect.height + 5) + "px");
+}
+
 
 function pokemon_image(id: number) {
     return `http://veekun.com/dex/media/pokemon/icons/${id}.png`;
+}
+
+function pokemon_image_big(id: number) {
+    return `https://serebii.net/pokearth/sprites/dp/${String(id).padStart(3, "0")}.png`;
 }
 
 function switch_to_search_form() {
