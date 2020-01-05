@@ -9,6 +9,57 @@ POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
 
+function main() {
+    let root = result_to_dom_node(Predictor.predict(new PRNG(0))[0]);
+    root.id = "root";
+    $("#result-box").empty().append(root);
+    $("#result-box svg.entries").mouseenter((e) => {
+        let svg = e.currentTarget;
+        let ids = (svg.getAttribute("data-entries")).split(",").map((x) => Number(x));
+        $('#tooltip').remove();
+        let $tooltip = $("<div id='tooltip' />");
+        let $table = $("<table />");
+        $tooltip.append($table);
+        for (let id of ids) {
+            let entry = ALL_ENTRIES[id];
+            let pokemon = entry.pokemon;
+            let item = entry.item;
+            let nature = entry.nature;
+            let $tr = $("<tr/>");
+            $tr.append($("<td/>").append($("<img />").attr("src", pokemon_image_big(pokemon))));
+            $tr.append($("<td/>").append($("<b />").text(POKEMON_NAMES[pokemon]))
+                                 .append($("<span/>").text(" " + ITEM_NAMES[item] + " " + NATURE_NAMES[nature] + " " + entry.effort))
+                                 .append("<br/>").append($("<span />").text(entry.moves.map((x: number) => MOVE_NAMES[x]).join(" "))));
+            $table.append($tr);
+        }
+        $("#result-box").append($tooltip);
+        resize_tooltip(svg, $tooltip.get(0));
+        $tooltip.mouseleave((e) => {
+            if (!svg.contains(e.relatedTarget as Node)) {
+                $('#tooltip').hide();
+            }
+        });
+    }).mouseleave((e) => {
+        let tooltip = $('#tooltip').get(0);
+        if (!tooltip.contains(e.relatedTarget as Node)) {
+            $('#tooltip').hide();
+        }
+    });
+    $("#result-box svg.entries").click((e) => {
+        let svg = e.currentTarget.parentNode;
+        if (!$(svg).hasClass("hidden")) {
+            $(svg).addClass("hidden");
+            $("> svg.node", svg).hide();
+            $("> line", svg).hide();
+        } else {
+            $(svg).removeClass("hidden");
+            $("> svg.node", svg).show();
+            $("> line", svg).show();
+        }
+        update_size(<HTMLElement>root);
+    });
+}
+
 function create_svg() {
     return $("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'/>");
 }
@@ -18,41 +69,52 @@ const HEIGHT = 30;
 
 function result_to_dom_node(result: IPredictResultNode) {
     let svg = create_svg();
+    svg.addClass("node");
     let y = 0;
     let width = WIDTH * 3;
     let svg1 = entries_to_dom_node(result.chosen);
     svg1.setAttribute("y", String(y));
     svg.append(svg1);
     let n = result.children.length;
-    addLine(svg.get(0), WIDTH * 3, HEIGHT / 2, WIDTH * 3 + 15, HEIGHT / 2);
+    let line0 = addLine(svg.get(0), WIDTH * 3, HEIGHT / 2, WIDTH * 3 + 15, HEIGHT / 2);
+    $(line0).addClass("line0");
     let lasty = 0;
     for (let i = 0; i < n; i++) {
         let child = result.children[i];
-        if (i > 0) { addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2); }
+        if (i > 0) {
+            let line1 = addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2);
+            $(line1).addClass("line1");
+        }
         lasty = y + HEIGHT / 2;
         let svg2 = result_to_dom_node(child);
         svg2.setAttribute("x", String(WIDTH * 3 + 15));
         svg2.setAttribute("y", String(y));
         svg.append(svg2);
         width = Math.max(width, WIDTH * 3 + 15 + Number(svg2.getAttribute("width")));
-        y += Math.max(HEIGHT, Number(svg2.getAttribute("height"))) + 5;
+        y += Math.max(HEIGHT, Number(svg2.getAttribute("height")));
     }
-    addLine(svg.get(0), WIDTH * 3 + 7.5, HEIGHT / 2, WIDTH * 3 + 7.5, lasty);
+    let verticalLine = addLine(svg.get(0), WIDTH * 3 + 7.5, HEIGHT / 2, WIDTH * 3 + 7.5, lasty);
+    $(verticalLine).addClass("verticalline");
 
     svg.attr("width", width);
-    svg.attr("height", Math.max(y, HEIGHT));
+    svg.attr("height", Math.max(y, HEIGHT + 5));
     return svg.get(0);
 }
 
 function addLine(svg: HTMLElement, x1: number, y1: number, x2: number, y2: number) {
     let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    setLineCoordinates(line, x1, y1, x2, y2);
+    line.setAttribute("stroke", "#333");
+    line.setAttribute("stroke-width", "1");
+    svg.appendChild(line);
+    return line;
+}
+
+function setLineCoordinates(line: Element, x1: number, y1: number, x2: number, y2: number) {
     line.setAttribute("x1", String(x1));
     line.setAttribute("y1", String(y1));
     line.setAttribute("x2", String(x2));
     line.setAttribute("y2", String(y2));
-    line.setAttribute("stroke", "#333");
-    line.setAttribute("stroke-width", "1");
-    svg.appendChild(line);
 }
 
 function entries_to_dom_node(entries: Entry[]) {
@@ -83,39 +145,32 @@ function entries_to_dom_node(entries: Entry[]) {
     return svg.get(0);
 }
 
-$("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))[0]));
-$("#result-box svg.entries").mouseenter((e) => {
-    let svg = e.currentTarget;
-    let ids = (svg.getAttribute("data-entries")).split(",").map((x) => Number(x));
-    $('#tooltip').remove();
-    let $tooltip = $("<div id='tooltip' />");
-    let $table = $("<table />");
-    $tooltip.append($table);
-    for (let id of ids) {
-        let entry = ALL_ENTRIES[id];
-        let pokemon = entry.pokemon;
-        let item = entry.item;
-        let nature = entry.nature;
-        let $tr = $("<tr/>");
-        $tr.append($("<td/>").append($("<img />").attr("src", pokemon_image_big(pokemon))));
-        $tr.append($("<td/>").append($("<b />").text(POKEMON_NAMES[pokemon]))
-                             .append($("<span/>").text(" " + ITEM_NAMES[item] + " " + NATURE_NAMES[nature] + " " + entry.effort))
-                             .append("<br/>").append($("<span />").text(entry.moves.map((x: number) => MOVE_NAMES[x]).join(" "))));
-        $table.append($tr);
-    }
-    $("#result-box").append($tooltip);
-    resize_tooltip(svg, $tooltip.get(0));
-    $tooltip.mouseleave((e) => {
-        if (!svg.contains(e.relatedTarget as Node)) {
-            $('#tooltip').hide();
+function update_size(svg: HTMLElement) {
+    if (svg.style.display === "none") return [0, 0];
+    let y = 0;
+    let width = WIDTH * 3;
+    let lines = $("> .line1", svg).toArray();
+    let lasty = 0;
+    $("> svg.node", svg).each((i, child) => {
+        let [w, h] = update_size(child);
+        if (i > 0) {
+            setLineCoordinates(lines[i - 1], WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2);
+        }
+        lasty = y + HEIGHT / 2;
+        child.setAttribute("y", String(y));
+        if (h > 0) {
+            width = Math.max(width, WIDTH * 3 + 15 + w);
+            y += Math.max(HEIGHT, h);
         }
     });
-}).mouseleave((e) => {
-    let tooltip = $('#tooltip').get(0);
-    if (!tooltip.contains(e.relatedTarget as Node)) {
-        $('#tooltip').hide();
-    }
-});
+    let verticalline = $("> .verticalline", svg).get(0);
+    setLineCoordinates(verticalline, WIDTH * 3 + 7.5, HEIGHT / 2, WIDTH * 3 + 7.5, lasty);
+    let height = Math.max(y, HEIGHT + 5);
+    svg.setAttribute("width", String(width));
+    svg.setAttribute("height", String(height));
+    return [width, height];
+
+}
 
 function resize_tooltip(button: HTMLElement, tooltip: HTMLElement) {
     let buttonRect = button.getBoundingClientRect();
@@ -156,6 +211,7 @@ function switch_to_result() {
     $('#result').show();
     $('.nav-item').removeClass('active');
     $('#nav-item-result').addClass('active');
+    main();
 }
 
 function switch_to_round_form() {
