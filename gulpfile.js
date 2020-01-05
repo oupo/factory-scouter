@@ -1,5 +1,12 @@
 const gulp = require('gulp');
 const tsPipeline = require('gulp-webpack-typescript-pipeline');
+const connect = require('gulp-connect');
+
+gulp.task('connect', function() {
+  connect.server({
+    root: './',
+  });
+});
 
 tsPipeline.registerBuildGulpTasks(
   gulp,
@@ -13,4 +20,4 @@ tsPipeline.registerBuildGulpTasks(
   }
 );
 
-gulp.task('default', gulp.parallel('tsPipeline:watch'));
+gulp.task('default', gulp.parallel('tsPipeline:watch', 'connect'));

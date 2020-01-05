@@ -22,5 +22,8 @@
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10",
     "webpack-stream": "^5.2.1"
+  },
+  "dependencies": {
+    "gulp-connect": "^5.7.0"
   }
 }
