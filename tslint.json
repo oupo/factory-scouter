@@ -10,6 +10,7 @@
         "variable-name": false,
         "max-line-length": [false],
         "no-shadowed-variable": false,
-        "max-classes-per-file": false
+        "max-classes-per-file": false,
+        "strict-boolean-expressions": true
     }
 }

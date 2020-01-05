@@ -1551,11 +1551,11 @@ var PRNG = /** @class */ (function () {
         return (this.seed >>> 16) % n;
     };
     PRNG.prototype.succ = function () {
-        this.seed = u32(mul(this.seed, A) + B);
+        this.seed = u32(Math.imul(this.seed, A) + B);
     };
     PRNG.prototype.stepQ = function (n) {
         var _a = make_const(n), a = _a[0], b = _a[1];
-        this.seed = u32(mul(this.seed, a) + b);
+        this.seed = u32(Math.imul(this.seed, a) + b);
     };
     PRNG.prototype.dup = function () {
         return new PRNG(this.seed);
@@ -1570,21 +1570,14 @@ function make_const(n) {
     var d = 0;
     while (n) {
         if (n & 1) {
-            d = u32(mul(d, a) + b);
-            c = mul(c, a);
+            d = u32(Math.imul(d, a) + b);
+            c = u32(Math.imul(c, a));
         }
-        b = u32(mul(b, a) + b);
-        a = mul(a, a);
+        b = u32(Math.imul(b, a) + b);
+        a = u32(Math.imul(a, a));
         n >>>= 1;
     }
     return [c, d];
-}
-function mul(a, b) {
-    var a1 = a >>> 16;
-    var a2 = a & 0xffff;
-    var b1 = b >>> 16;
-    var b2 = b & 0xffff;
-    return u32(((a1 * b2 + a2 * b1) << 16) + a2 * b2);
 }
 function u32(x) { return x >>> 0; }
 

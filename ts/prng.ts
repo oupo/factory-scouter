@@ -15,11 +15,11 @@ export class PRNG {
         return (this.seed >>> 16) % n;
     }
     public succ() {
-        this.seed = u32(mul(this.seed, A) + B);
+        this.seed = u32(Math.imul(this.seed, A) + B);
     }
     public stepQ(n: number) {
         const [a, b] = make_const(n);
-        this.seed = u32(mul(this.seed, a) + b);
+        this.seed = u32(Math.imul(this.seed, a) + b);
     }
     public dup() {
         return new PRNG(this.seed);
@@ -33,22 +33,14 @@ function make_const(n: number) {
     let d = 0;
     while (n) {
         if (n & 1) {
-            d = u32(mul(d, a) + b);
-            c = mul(c, a);
+            d = u32(Math.imul(d, a) + b);
+            c = u32(Math.imul(c, a));
         }
-        b = u32(mul(b, a) + b);
-        a = mul(a, a);
+        b = u32(Math.imul(b, a) + b);
+        a = u32(Math.imul(a, a));
         n >>>= 1;
     }
     return [c, d];
-}
-
-function mul(a: number, b: number) {
-    const a1 = a >>> 16;
-    const a2 = a & 0xffff;
-    const b1 = b >>> 16;
-    const b2 = b & 0xffff;
-    return u32(((a1 * b2 + a2 * b1) << 16) + a2 * b2);
 }
 
 function u32(x: number) { return x >>> 0; }
