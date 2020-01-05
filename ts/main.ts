@@ -44,19 +44,13 @@ function result_to_dom_node(result: PredictResultNode) {
     return svg.get(0);
 }
 
-function addCurve(svg: HTMLElement, x1: number, y1: number, x2: number, y2: number) {
-    addLine(svg, x1, y1, (x1 + x2) / 2, y1);
-    addLine(svg, (x1 + x2) / 2, y1, (x1 + x2) / 2, y2);
-    addLine(svg, (x1 + x2) / 2, y2, x2, y2);
-}
-
 function addLine(svg: HTMLElement, x1: number, y1: number, x2: number, y2: number) {
     let line = document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute("x1", String(x1));
     line.setAttribute("y1", String(y1));
     line.setAttribute("x2", String(x2));
     line.setAttribute("y2", String(y2));
-    line.setAttribute("stroke", "black");
+    line.setAttribute("stroke", "#333");
     line.setAttribute("stroke-width", "1");
     svg.appendChild(line);
 }
@@ -68,8 +62,12 @@ function entries_to_dom_node(entries: Entry[]) {
     var rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
     rect.setAttribute('height', String(h));
     rect.setAttribute('width', String(w));
+    rect.setAttribute('rx', '10');
+    rect.setAttribute('ry', '10');
     rect.setAttribute('x', '0');
     rect.setAttribute('y', '0');
+    rect.setAttribute('stroke', '#333');
+    rect.setAttribute('stroke-width', '1');
     rect.setAttribute('style', 'fill: #cccccc');
     svg.append(rect);
     for (let i = 0; i < entries.length; i ++) {
