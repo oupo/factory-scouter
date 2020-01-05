@@ -27,10 +27,8 @@ export class PRNG {
 }
 
 function make_const(n: number) {
-    let a = A;
-    let b = B;
-    let c = 1;
-    let d = 0;
+    let a = A, b = B;
+    let c = 1, d = 0;
     while (n) {
         if (n & 1) {
             d = u32(Math.imul(d, a) + b);

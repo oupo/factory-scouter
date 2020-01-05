@@ -1,7 +1,7 @@
 {
     "files": [
-        "ts/main.ts",
-        "ts/data.ts",
+        "src/ts/main.ts",
+        "src/ts/data.ts",
     ],
     "compilerOptions": {
         "noImplicitAny": true,

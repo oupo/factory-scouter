@@ -2,28 +2,26 @@
   "name": "factory-scouter",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": ".eslintrc.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oupo/factory-scouter.git"
+  },
+  "keywords": [],
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oupo/factory-scouter/issues"
+  },
+  "homepage": "https://github.com/oupo/factory-scouter#readme",
   "devDependencies": {
-    "@types/jquery": "^3.3.31",
-    "browserify": "^16.5.0",
-    "fancy-log": "^1.3.3",
-    "gulp": "^4.0.2",
-    "gulp-typescript": "^6.0.0-alpha.1",
-    "gulp-webpack-typescript-pipeline": "^15.0.0",
-    "tsify": "^4.0.1",
-    "typescript": "^3.7.4",
-    "vinyl-source-stream": "^2.0.0",
-    "watchify": "^3.11.1",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10",
-    "webpack-stream": "^5.2.1"
+    "parcel": "^1.12.4",
+    "typescript": "^3.7.4"
   },
   "dependencies": {
-    "gulp-connect": "^5.7.0"
+    "@types/jquery": "^3.3.31"
   }
 }
