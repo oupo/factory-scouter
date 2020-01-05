@@ -120,8 +120,13 @@ $("#result-box svg.entries").mouseenter((e) => {
 function resize_tooltip(button: HTMLElement, tooltip: HTMLElement) {
     let buttonRect = button.getBoundingClientRect();
     let tooltipRect = tooltip.getBoundingClientRect();
-    $(tooltip).css("left", (buttonRect.left + window.scrollX) + "px");
-    $(tooltip).css("top", (buttonRect.top + window.scrollY + buttonRect.height) + "px");
+    let right = buttonRect.left + tooltipRect.width;
+    right = Math.min(right, window.innerWidth);
+    right += window.scrollX;
+    let left = right - tooltipRect.width;
+    let top = buttonRect.top + window.scrollY + buttonRect.height;
+    $(tooltip).css("left", left + "px");
+    $(tooltip).css("top", top + "px");
 }
 
 function pokemon_image(id: number) {

@@ -11,13 +11,14 @@ h2 {
 }
 
 #tooltip {
-	position: absolute;
+    position: absolute;
 	top: 0;
 	left: 0;
     border: 1px solid #000;
     border-radius: 5px;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	padding: 3px;
-	background: #ffc;
+    background: #ffc;
+    width: calc(80px + 15rem);
 	font-size: 80%;
 }
