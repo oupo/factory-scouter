@@ -19,7 +19,7 @@ export class Predictor {
         if (enemies.length === NBATTLES) {
             return [];
         }
-        let unchoosable = enemies[enemies.length - 1] || starters;
+        let unchoosable = enemies.length > 0 ? enemies[enemies.length - 1] : starters;
         let maybe_players = [...starters, ...Util.arrayFlatten(enemies.slice(0, -1))];
         let battle_index = enemies.length + 1;
         let results = OneEnemyPredictor.predict(prng, unchoosable, maybe_players, battle_index);

@@ -14,12 +14,15 @@ module.exports = {
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 2018,
-        "sourceType": "module"
+        "sourceType": "module",
+        "project": "tsconfig.json",
     },
     "plugins": [
         "@typescript-eslint"
     ],
     "rules": {
         "no-constant-condition": 0,
+        "no-unused-vars": 0,
+        "@typescript-eslint/strict-boolean-expressions": 1,
     }
 };
