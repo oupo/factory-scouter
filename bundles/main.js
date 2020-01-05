@@ -1094,7 +1094,7 @@ var Entry = /** @class */ (function () {
         this.effort = effort;
     }
     Entry.prototype.collides_with = function (other) {
-        return this.item == other.item || this.pokemon == other.pokemon;
+        return this.item === other.item || this.pokemon === other.pokemon;
     };
     Entry.prototype.collides_within = function (entries) {
         var _this = this;
@@ -1127,8 +1127,8 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var entry_1 = __webpack_require__(/*! ./entry */ "./ts/entry.ts");
 var constant_1 = __webpack_require__(/*! ./constant */ "./ts/constant.ts");
+var entry_1 = __webpack_require__(/*! ./entry */ "./ts/entry.ts");
 var FactoryHelper = /** @class */ (function () {
     function FactoryHelper() {
     }
@@ -1143,7 +1143,7 @@ var FactoryHelper = /** @class */ (function () {
         return entry_1.ALL_ENTRIES[i];
     };
     FactoryHelper._choice_range = function (battle_index) {
-        if (battle_index != 7) {
+        if (battle_index !== 7) {
             return [0, 150];
         }
         else {
@@ -1185,7 +1185,7 @@ var FactoryHelper = /** @class */ (function () {
     };
     FactoryHelper.after_consumptionQ = function (prng, entries, battle_index) {
         this._pid_loopQ(prng, entries);
-        prng.stepQ(battle_index == 1 ? 24 : 6);
+        prng.stepQ(battle_index === 1 ? 24 : 6);
     };
     FactoryHelper._pid_loopQ = function (prng, entries) {
         for (var _i = 0, entries_1 = entries; _i < entries_1.length; _i++) {
@@ -1193,8 +1193,9 @@ var FactoryHelper = /** @class */ (function () {
             var trainer_id = FactoryHelper._rand32Q(prng);
             while (true) {
                 var pid = FactoryHelper._rand32Q(prng);
-                if (pid % 25 == entry.nature)
+                if (pid % 25 === entry.nature) {
                     break;
+                }
             }
         }
     };
@@ -1221,9 +1222,9 @@ exports.FactoryHelper = FactoryHelper;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var data_1 = __webpack_require__(/*! ./data */ "./ts/data.ts");
-var prng_1 = __webpack_require__(/*! ./prng */ "./ts/prng.ts");
 var entry_1 = __webpack_require__(/*! ./entry */ "./ts/entry.ts");
 var predictor_1 = __webpack_require__(/*! ./predictor */ "./ts/predictor.ts");
+var prng_1 = __webpack_require__(/*! ./prng */ "./ts/prng.ts");
 var POKEMON_NAME_TO_ID = {};
 data_1.POKEMON_NAMES.forEach(function (name, i) {
     POKEMON_NAME_TO_ID[name] = i;
@@ -1245,8 +1246,9 @@ function result_to_dom_node(result) {
     var lasty = 0;
     for (var i = 0; i < n; i++) {
         var child = result.children[i];
-        if (i > 0)
+        if (i > 0) {
             addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2);
+        }
         lasty = y + HEIGHT / 2;
         var svg2 = result_to_dom_node(child);
         svg2.setAttribute("x", String(WIDTH * 3 + 15));
@@ -1313,7 +1315,8 @@ $("#result-box svg.entries").mouseenter(function (e) {
         var nature = entry.nature;
         var $tr = $("<tr/>");
         $tr.append($("<td/>").append($("<img />").attr("src", pokemon_image_big(pokemon))));
-        $tr.append($("<td/>").append($("<b />").text(data_1.POKEMON_NAMES[pokemon])).append($("<span/>").text(" " + data_1.ITEM_NAMES[item] + " " + data_1.NATURE_NAMES[nature] + " " + entry.effort))
+        $tr.append($("<td/>").append($("<b />").text(data_1.POKEMON_NAMES[pokemon]))
+            .append($("<span/>").text(" " + data_1.ITEM_NAMES[item] + " " + data_1.NATURE_NAMES[nature] + " " + entry.effort))
             .append("<br/>").append($("<span />").text(entry.moves.map(function (x) { return data_1.MOVE_NAMES[x]; }).join(" "))));
         $table.append($tr);
     }
@@ -1334,7 +1337,7 @@ function resize_tooltip(button, tooltip) {
     var buttonRect = button.getBoundingClientRect();
     var tooltipRect = tooltip.getBoundingClientRect();
     $(tooltip).css("left", (buttonRect.left + window.scrollX) + "px");
-    $(tooltip).css("top", (buttonRect.top + window.scrollY + buttonRect.height + 5) + "px");
+    $(tooltip).css("top", (buttonRect.top + window.scrollY + buttonRect.height) + "px");
 }
 function pokemon_image(id) {
     return "http://veekun.com/dex/media/pokemon/icons/" + id + ".png";
@@ -1384,7 +1387,7 @@ function switch_to_id_form() {
     $('.breadcrumb-item').removeClass('selected');
     $('#breadcrumb-id').addClass('selected');
     var name = $('#poke0').val();
-    if (name != "" && name in POKEMON_NAME_TO_ID) {
+    if (name !== "" && name in POKEMON_NAME_TO_ID) {
         var id = POKEMON_NAME_TO_ID[name];
         $('#poke0-name').empty().append($("<span/>").text(name)).append($('<img />').attr('src', pokemon_image(id)));
     }
@@ -1421,7 +1424,7 @@ $(function () {
         $('#poke' + i).on('input', function (e) {
             var input = e.target;
             var name = input.value;
-            if (name != "" && name in POKEMON_NAME_TO_ID) {
+            if (name !== "" && name in POKEMON_NAME_TO_ID) {
                 var id = POKEMON_NAME_TO_ID[name];
                 $("#pokeimg" + i).empty().append($('<img />').attr('src', pokemon_image(id)));
             }
@@ -1455,8 +1458,8 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var factory_helper_1 = __webpack_require__(/*! ./factory-helper */ "./ts/factory-helper.ts");
 var constant_1 = __webpack_require__(/*! ./constant */ "./ts/constant.ts");
+var factory_helper_1 = __webpack_require__(/*! ./factory-helper */ "./ts/factory-helper.ts");
 var util_1 = __webpack_require__(/*! ./util */ "./ts/util.ts");
 var Predictor = /** @class */ (function () {
     function Predictor() {
@@ -1470,7 +1473,7 @@ var Predictor = /** @class */ (function () {
     };
     Predictor.prototype.predict0 = function (prng, enemies, skipped, starters) {
         var _this = this;
-        if (enemies.length == constant_1.NBATTLES) {
+        if (enemies.length === constant_1.NBATTLES) {
             return [];
         }
         var unchoosable = enemies[enemies.length - 1] || starters;
@@ -1499,7 +1502,7 @@ var OneEnemyPredictor = /** @class */ (function () {
         return this.predict0(prng, [], []);
     };
     OneEnemyPredictor.prototype.predict0 = function (prng, skipped, chosen) {
-        if (chosen.length == constant_1.NPARTY) {
+        if (chosen.length === constant_1.NPARTY) {
             var prngp_1 = factory_helper_1.FactoryHelper.after_consumption(prng, chosen, this.battle_index);
             return [[prngp_1, chosen, skipped]];
         }
@@ -1507,7 +1510,7 @@ var OneEnemyPredictor = /** @class */ (function () {
         if (x.collides_within(__spreadArrays(this.unchoosable, chosen, skipped))) {
             return this.predict0(prngp, skipped, chosen);
         }
-        else if (!x.collides_within(this.maybe_players) || skipped.length == constant_1.NPARTY) {
+        else if (!x.collides_within(this.maybe_players) || skipped.length === constant_1.NPARTY) {
             return this.predict0(prngp, skipped, __spreadArrays(chosen, [x]));
         }
         else {
@@ -1533,7 +1536,8 @@ exports.OneEnemyPredictor = OneEnemyPredictor;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var A = 0x41c64e6d, B = 0x6073;
+var A = 0x41c64e6d;
+var B = 0x6073;
 var PRNG = /** @class */ (function () {
     function PRNG(seed) {
         this.seed = seed;
@@ -1560,8 +1564,10 @@ var PRNG = /** @class */ (function () {
 }());
 exports.PRNG = PRNG;
 function make_const(n) {
-    var a = A, b = B;
-    var c = 1, d = 0;
+    var a = A;
+    var b = B;
+    var c = 1;
+    var d = 0;
     while (n) {
         if (n & 1) {
             d = u32(mul(d, a) + b);
@@ -1574,8 +1580,10 @@ function make_const(n) {
     return [c, d];
 }
 function mul(a, b) {
-    var a1 = a >>> 16, a2 = a & 0xffff;
-    var b1 = b >>> 16, b2 = b & 0xffff;
+    var a1 = a >>> 16;
+    var a2 = a & 0xffff;
+    var b1 = b >>> 16;
+    var b2 = b & 0xffff;
     return u32(((a1 * b2 + a2 * b1) << 16) + a2 * b2);
 }
 function u32(x) { return x >>> 0; }
@@ -1598,8 +1606,9 @@ var Util = /** @class */ (function () {
     }
     Util.arrayFlatten = function (ary) {
         var ret = [];
-        for (var i = 0; i < ary.length; i++) {
-            ret.push.apply(ret, ary[i]);
+        for (var _i = 0, ary_1 = ary; _i < ary_1.length; _i++) {
+            var e = ary_1[_i];
+            ret.push.apply(ret, e);
         }
         return ret;
     };

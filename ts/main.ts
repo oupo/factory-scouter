@@ -1,10 +1,10 @@
-import {POKEMON_NAMES, ITEM_NAMES, NATURE_NAMES, MOVE_NAMES} from './data';
-import {PRNG} from './prng';
-import {ALL_ENTRIES, Entry} from './entry';
-import {FactoryHelper} from './factory-helper';
-import {Predictor, PredictResultNode} from './predictor';
+import { ITEM_NAMES, MOVE_NAMES, NATURE_NAMES, POKEMON_NAMES } from './data';
+import { ALL_ENTRIES, Entry } from './entry';
+import { FactoryHelper } from './factory-helper';
+import { IPredictResultNode, Predictor } from './predictor';
+import { PRNG } from './prng';
 
-let POKEMON_NAME_TO_ID: { [key: string]: number; }= {};
+let POKEMON_NAME_TO_ID: { [key: string]: number; } = {};
 POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
@@ -16,7 +16,7 @@ function create_svg() {
 const WIDTH = 40;
 const HEIGHT = 30;
 
-function result_to_dom_node(result: PredictResultNode) {
+function result_to_dom_node(result: IPredictResultNode) {
     let svg = create_svg();
     let y = 0;
     let width = WIDTH * 3;
@@ -26,9 +26,9 @@ function result_to_dom_node(result: PredictResultNode) {
     let n = result.children.length;
     addLine(svg.get(0), WIDTH * 3, HEIGHT / 2, WIDTH * 3 + 15, HEIGHT / 2);
     let lasty = 0;
-    for (let i = 0; i < n; i ++) {
+    for (let i = 0; i < n; i++) {
         let child = result.children[i];
-        if (i > 0) addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2);
+        if (i > 0) { addLine(svg.get(0), WIDTH * 3 + 7.5, y + HEIGHT / 2, WIDTH * 3 + 15, y + HEIGHT / 2); }
         lasty = y + HEIGHT / 2;
         let svg2 = result_to_dom_node(child);
         svg2.setAttribute("x", String(WIDTH * 3 + 15));
@@ -45,7 +45,7 @@ function result_to_dom_node(result: PredictResultNode) {
 }
 
 function addLine(svg: HTMLElement, x1: number, y1: number, x2: number, y2: number) {
-    let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    let line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute("x1", String(x1));
     line.setAttribute("y1", String(y1));
     line.setAttribute("x2", String(x2));
@@ -60,7 +60,7 @@ function entries_to_dom_node(entries: Entry[]) {
     let h = HEIGHT;
     let svg = create_svg().attr("width", w).attr("height", h).addClass("entries");
     svg.attr("data-entries", entries.map((x) => x.id).join(","));
-    var rect = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     rect.setAttribute('height', String(h));
     rect.setAttribute('width', String(w));
     rect.setAttribute('rx', '10');
@@ -71,11 +71,11 @@ function entries_to_dom_node(entries: Entry[]) {
     rect.setAttribute('stroke-width', '1');
     rect.setAttribute('style', 'fill: #cccccc');
     svg.append(rect);
-    for (let i = 0; i < entries.length; i ++) {
-        var image = document.createElementNS('http://www.w3.org/2000/svg','image');
+    for (let i = 0; i < entries.length; i++) {
+        let image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
         image.setAttribute('height', String(HEIGHT));
         image.setAttribute('width', String(WIDTH));
-        image.setAttributeNS('http://www.w3.org/1999/xlink','href',pokemon_image(entries[i].pokemon));
+        image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', pokemon_image(entries[i].pokemon));
         image.setAttribute('x', String(WIDTH * i));
         image.setAttribute('y', '0');
         svg.append(image);
@@ -86,7 +86,7 @@ function entries_to_dom_node(entries: Entry[]) {
 $("#result-box").empty().append(result_to_dom_node(Predictor.predict(new PRNG(0))[0]));
 $("#result-box svg.entries").mouseenter((e) => {
     let svg = e.currentTarget;
-    let ids = (svg.getAttribute("data-entries")).split(",").map(x => Number(x));
+    let ids = (svg.getAttribute("data-entries")).split(",").map((x) => Number(x));
     $('#tooltip').remove();
     let $tooltip = $("<div id='tooltip' />");
     let $table = $("<table />");
@@ -98,20 +98,21 @@ $("#result-box svg.entries").mouseenter((e) => {
         let nature = entry.nature;
         let $tr = $("<tr/>");
         $tr.append($("<td/>").append($("<img />").attr("src", pokemon_image_big(pokemon))));
-        $tr.append($("<td/>").append($("<b />").text(POKEMON_NAMES[pokemon])).append($("<span/>").text(" " + ITEM_NAMES[item] + " " + NATURE_NAMES[nature] + " " + entry.effort))
-        .append("<br/>").append($("<span />").text(entry.moves.map((x: number) => MOVE_NAMES[x]).join(" "))));
+        $tr.append($("<td/>").append($("<b />").text(POKEMON_NAMES[pokemon]))
+                             .append($("<span/>").text(" " + ITEM_NAMES[item] + " " + NATURE_NAMES[nature] + " " + entry.effort))
+                             .append("<br/>").append($("<span />").text(entry.moves.map((x: number) => MOVE_NAMES[x]).join(" "))));
         $table.append($tr);
     }
     $("#result-box").append($tooltip);
     resize_tooltip(svg, $tooltip.get(0));
     $tooltip.mouseleave((e) => {
-        if (!svg.contains(<Node>e.relatedTarget)) {
+        if (!svg.contains(e.relatedTarget as Node)) {
             $('#tooltip').hide();
         }
     });
 }).mouseleave((e) => {
     let tooltip = $('#tooltip').get(0);
-    if (!tooltip.contains(<Node>e.relatedTarget)) {
+    if (!tooltip.contains(e.relatedTarget as Node)) {
         $('#tooltip').hide();
     }
 });
@@ -120,9 +121,8 @@ function resize_tooltip(button: HTMLElement, tooltip: HTMLElement) {
     let buttonRect = button.getBoundingClientRect();
     let tooltipRect = tooltip.getBoundingClientRect();
     $(tooltip).css("left", (buttonRect.left + window.scrollX) + "px");
-    $(tooltip).css("top", (buttonRect.top + window.scrollY + buttonRect.height + 5) + "px");
+    $(tooltip).css("top", (buttonRect.top + window.scrollY + buttonRect.height) + "px");
 }
-
 
 function pokemon_image(id: number) {
     return `http://veekun.com/dex/media/pokemon/icons/${id}.png`;
@@ -179,8 +179,8 @@ function switch_to_id_form() {
     $('#id-form').show();
     $('.breadcrumb-item').removeClass('selected');
     $('#breadcrumb-id').addClass('selected');
-    const name = <string>$('#poke0').val();
-    if (name != "" && name in POKEMON_NAME_TO_ID) {
+    const name = $('#poke0').val() as string;
+    if (name !== "" && name in POKEMON_NAME_TO_ID) {
         const id = POKEMON_NAME_TO_ID[name];
         $('#poke0-name').empty().append($("<span/>").text(name)).append($('<img />').attr('src', pokemon_image(id)));
     } else {
@@ -213,11 +213,11 @@ $(() => {
     $('#breadcrumb-id').click((e) => {
         switch_to_id_form();
     });
-    for (let i = 0; i < 6; i ++) {
+    for (let i = 0; i < 6; i++) {
         $('#poke' + i).on('input', (e) => {
-            const input = <HTMLInputElement>e.target;
+            const input = e.target as HTMLInputElement;
             const name = input.value;
-            if (name != "" && name in POKEMON_NAME_TO_ID) {
+            if (name !== "" && name in POKEMON_NAME_TO_ID) {
                 const id = POKEMON_NAME_TO_ID[name];
                 $("#pokeimg" + i).empty().append($('<img />').attr('src', pokemon_image(id)));
             } else {

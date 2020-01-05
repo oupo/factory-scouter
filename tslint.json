@@ -1,1 +1,15 @@
-{ "rules": { "no-console": false } }
+{
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "no-console": false,
+        "quotemark": [false],
+        "no-bitwise": false,
+        "prefer-const": false,
+        "variable-name": false,
+        "max-line-length": [false],
+        "no-shadowed-variable": false,
+        "max-classes-per-file": false
+    }
+}
