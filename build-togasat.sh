@@ -1,0 +1,2 @@
+emcc -std=c++11 togasat.cpp -O3 -s WASM=1 -s MODULARIZE=1 -s EXPORT_NAME=TogasatModule -s "EXPORTED_FUNCTIONS=['_solve', '_malloc', '_free']" -s "BINARYEN_METHOD='native-wasm'" -o togasat-module.js
+cp togasat-module.wasm static/togasat-module.wasm

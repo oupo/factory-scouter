@@ -3,14 +3,20 @@ import { ALL_ENTRIES, Entry } from './entry';
 import { FactoryHelper } from './factory-helper';
 import { IPredictResultNode, Predictor } from './predictor';
 import { PRNG } from './prng';
+import { Togasat } from './togasat';
 
 let POKEMON_NAME_TO_ID: { [key: string]: number; } = {};
 POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
 
+Togasat.load().then((togasat) => {
+    console.log(togasat.solve([1, 2, 0, -1, 0, -2, 0]));
+    console.log(togasat.solve([1, 0]));
+});
+
 function main() {
-    let root = result_to_dom_node(Predictor.predict(new PRNG(0))[0]);
+    let root = result_to_dom_node(Predictor.predict(new PRNG(123))[0]);
     root.id = "root";
     $("#result-box").empty().append(root);
     $("#result-box svg.entries").mouseenter((e) => {
