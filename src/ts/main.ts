@@ -185,7 +185,7 @@ function resize_tooltip(button: HTMLElement, tooltip: HTMLElement) {
 }
 
 function pokemon_image(id: number) {
-    return `http://veekun.com/dex/media/pokemon/icons/${id}.png`;
+    return `https://veekun.com/dex/media/pokemon/icons/${id}.png`;
 }
 
 function pokemon_image_big(id: number) {
