@@ -157,6 +157,7 @@ for number, d in enumerate(data):
     
     # 拾う場合、捨てるポケモンはたかだか1匹
     for x in range(nbattles - 2):
+        for y in range(npartymembers):
             for z1 in range(len(throw[x])):
                 for z2 in range(z1 + 1, len(throw[x])):
                     clause = []

@@ -15,8 +15,8 @@ Togasat.load().then((togasat) => {
     console.log(togasat.solve([1, 0]));
 });
 
-function main() {
-    let root = result_to_dom_node(Predictor.predict(new PRNG(123))[0]);
+function main(togasat: Togasat) {
+    let root = result_to_dom_node(Predictor.predict(togasat, new PRNG(0))[0]);
     root.id = "root";
     $("#result-box").empty().append(root);
     $("#result-box svg.entries").mouseenter((e) => {
@@ -212,12 +212,12 @@ function switch_to_seed_form() {
     $('#nav-item-seed').addClass('active');
 }
 
-function switch_to_result() {
+function switch_to_result(togasat: Togasat) {
     $('.container').hide();
     $('#result').show();
     $('.nav-item').removeClass('active');
     $('#nav-item-result').addClass('active');
-    main();
+    main(togasat);
 }
 
 function switch_to_round_form() {
@@ -256,14 +256,16 @@ function switch_to_id_form() {
 }
 
 $(() => {
+    Togasat.load().then((togasat) => {
+        $('#nav-item-result').click((e) => {
+            switch_to_result(togasat);
+        });
+    });
     $('#nav-item-search').click((e) => {
         switch_to_search_form();
     });
     $('#nav-item-seed').click((e) => {
         switch_to_seed_form();
-    });
-    $('#nav-item-result').click((e) => {
-        switch_to_result();
     });
     $('#ok-round').click((e) => {
         switch_to_poke_form();

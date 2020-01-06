@@ -6,4 +6,15 @@ export class Util {
         }
         return ret;
     }
+
+    public static compact<T>(ary: T[]) {
+        const ret = [];
+        for (const e of ary) {
+            if (e !== null) {
+                ret.push(e);
+            }
+        }
+        return ret;
+
+    }
 }

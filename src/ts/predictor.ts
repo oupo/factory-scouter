@@ -3,11 +3,16 @@ import { Entry } from './entry';
 import { FactoryHelper } from './factory-helper';
 import { PRNG } from './prng';
 import { Util } from './util';
+import { Judger } from './judger';
+import { Togasat } from './togasat';
 
 export class Predictor {
-
-    public static predict(prng: PRNG) {
-        return new Predictor().predict(prng);
+    private togasat: Togasat;
+    constructor(togasat: Togasat) {
+        this.togasat = togasat;
+    }
+    public static predict(togasat: Togasat, prng: PRNG) {
+        return new Predictor(togasat).predict(prng);
     }
 
     public predict(prng: PRNG) {
@@ -24,11 +29,17 @@ export class Predictor {
         let battle_index = enemies.length + 1;
         let results = OneEnemyPredictor.predict(prng, unchoosable, maybe_players, battle_index);
 
-        return results.map((result) => {
+        return Util.compact(results.map((result) => {
             let [prngp, chosen, skippedp] = result;
-            let children = this.predict0(prngp, [...enemies, chosen], [...skipped, skippedp], starters);
-            return { prng: prngp, chosen, skipped: skippedp, children };
-        });
+            let enemiesp = [...enemies, chosen];
+            let skippedpp = [...skipped, skippedp];
+            if (Judger.judge(this.togasat, starters, enemiesp,skippedpp)) {
+                let children = this.predict0(prngp, enemiesp, skippedpp, starters);
+                return { prng: prngp, chosen, skipped: skippedp, children };
+            } else {
+                return null;
+            }
+        }));
 
     }
 }
@@ -66,7 +77,7 @@ export class OneEnemyPredictor {
         let [prngp, x] = FactoryHelper.choose_entry(prng, this.battle_index);
         if (x.collides_within([...this.unchoosable, ...chosen, ...skipped])) {
             return this.predict0(prngp, skipped, chosen);
-        } else if (!x.collides_within(this.maybe_players) || skipped.length === NPARTY) {
+        } else if (!x.collides_within(this.maybe_players)) {
             return this.predict0(prngp, skipped, [...chosen, x]);
         } else {
             let result1 = this.predict0(prngp, skipped, [...chosen, x]);
