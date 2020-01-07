@@ -5,6 +5,7 @@ import { PRNG } from './prng';
 import { Util } from './util';
 import { Judger } from './judger';
 import { Togasat } from './togasat';
+import { MyJudger } from './myjudger';
 
 export class Predictor {
     private togasat: Togasat;
@@ -43,11 +44,12 @@ export class Predictor {
             let [prngp, chosen, skippedp] = result;
             let enemiesp = [...enemies, chosen];
             let skippedpp = [...skipped, skippedp];
+            MyJudger.judge(starters, enemiesp, skippedpp);
             if (Judger.judge(this.togasat, starters, enemiesp, skippedpp)) {
                 let children = this.predict0(prngp, enemiesp, skippedpp, starters, trainers);
                 return { prng: prngp, chosen: chosen, skipped: skippedp, starters: starters, predEnemies: enemies, children: children };
             } else {
-                return null;
+                return { prng: prngp, chosen: chosen, skipped: skippedp, starters: starters, predEnemies: enemies, children: [] };
             }
         }));
 
