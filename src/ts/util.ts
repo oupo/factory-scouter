@@ -15,6 +15,11 @@ export class Util {
             }
         }
         return ret;
+    }
 
+    public static split(str: string, sep: string) {
+        let ary: string[] = str.split(sep);
+        if (ary[ary.length - 1] === "") ary.pop();
+        return ary;
     }
 }

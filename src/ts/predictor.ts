@@ -45,7 +45,7 @@ export class Predictor {
             let skippedpp = [...skipped, skippedp];
             if (Judger.judge(this.togasat, starters, enemiesp, skippedpp)) {
                 let children = this.predict0(prngp, enemiesp, skippedpp, starters, trainers);
-                return { prng: prngp, chosen, skipped: skippedp, children };
+                return { prng: prngp, chosen: chosen, skipped: skippedp, starters: starters, predEnemies: enemies, children: children };
             } else {
                 return null;
             }
@@ -58,11 +58,12 @@ export interface IPredictResultNode {
     prng: PRNG;
     chosen: Entry[];
     skipped: Entry[];
+    starters: Entry[];
+    predEnemies: Entry[][];
     children: IPredictResultNode[];
 }
 
 export class OneEnemyPredictor {
-
     public static predict(prng: PRNG, unchoosable: Entry[], maybe_players: Entry[], round: number, battle_index: number, rank: IRankObject) {
         return new OneEnemyPredictor(unchoosable, maybe_players, round, battle_index, rank).predict(prng);
     }

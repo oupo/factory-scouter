@@ -4,6 +4,7 @@ import { FactoryHelper } from './factory-helper';
 import { IPredictResultNode, Predictor } from './predictor';
 import { PRNG } from './prng';
 import { Togasat } from './togasat';
+import { Util } from './util';
 
 let POKEMON_NAME_TO_ID: { [key: string]: number; } = {};
 POKEMON_NAMES.forEach((name, i) => {
@@ -18,20 +19,28 @@ Togasat.load().then((togasat) => {
 function main(togasat: Togasat) {
     let is_hgss = true;
     let is_open_level = false;
-    let round = 7;
-    let num_bonus = 1;
-    let root = result_to_dom_node(Predictor.predict(togasat, new PRNG(1), is_hgss, is_open_level, round, num_bonus)[0]);
+    let round = 1;
+    let num_bonus = 0;
+    let res = Predictor.predict(togasat, new PRNG(0), is_hgss, is_open_level, round, num_bonus)[0];
+    let root = result_to_dom_node(res);
     root.id = "root";
-    $("#result-box").empty().append(root);
+    $("#result-box").empty()
+                    .append("<h3>スターター</h3>")
+                    .append($("<div/>").append(entries_to_dom_node(res.starters)))
+                    .append("<h3>敵</h3>")
+                    .append(root);
     $("#result-box svg.entries").mouseenter((e) => {
         let svg = e.currentTarget;
-        let ids = (svg.getAttribute("data-entries")).split(",").map((x) => Number(x));
+        let entries = Util.split(svg.getAttribute("data-entries"), ",").map((x) => ALL_ENTRIES[Number(x)]);
+        let skipped = Util.split(svg.getAttribute("data-skipped"), ",").map((x) => ALL_ENTRIES[Number(x)]);
+        let starters = Util.split(svg.getAttribute("data-starters"), ",").map((x) => ALL_ENTRIES[Number(x)]);
+        let predEnemies = Util.split(svg.getAttribute("data-predenemies"), ";").map((x) => Util.split(x, ",").map(y => ALL_ENTRIES[Number(y)]));
         $('#tooltip').remove();
         let $tooltip = $("<div id='tooltip' />");
         let $table = $("<table />");
         $tooltip.append($table);
-        for (let id of ids) {
-            let entry = ALL_ENTRIES[id];
+        $tooltip.append(branch_information(entries, skipped, starters, predEnemies));
+        for (let entry of entries) {
             let pokemon = entry.pokemon;
             let item = entry.item;
             let nature = entry.nature;
@@ -70,6 +79,47 @@ function main(togasat: Togasat) {
     });
 }
 
+function branch_information(entries: Entry[], skipped: Entry[], starters: Entry[], predEnemies: Entry[][]) {
+    let $div =  $("<div/>");
+    for (let e of entries) {
+        let texts: string[] = [];
+        for (let e2 of starters) {
+            if (e.collides_with(e2)) {
+                texts.push("スターターの"+POKEMON_NAMES[e2.pokemon]);
+            }
+        }
+        for (let i = 0; i < predEnemies.length; i ++) {
+            for (let e2 of predEnemies[i]) {
+                if (e.collides_with(e2)) {
+                    texts.push((i+1)+"戦目の"+POKEMON_NAMES[e2.pokemon]);
+                }
+            }
+        }
+        if (texts.length > 0) {
+            $div.append($("<div/>").text("以下のいずれも手持ちに入れていない: "+texts.join(", ")));
+        }
+    }
+    for (let e of skipped) {
+        let texts: string[] = [];
+        for (let e2 of starters) {
+            if (e.collides_with(e2)) {
+                texts.push("スターターの"+POKEMON_NAMES[e2.pokemon]);
+            }
+        }
+        for (let i = 0; i < predEnemies.length; i ++) {
+            for (let e2 of predEnemies[i]) {
+                if (e.collides_with(e2)) {
+                    texts.push((i+1)+"戦目の"+POKEMON_NAMES[e2.pokemon]);
+                }
+            }
+        }
+        $div.append($("<div/>").text("以下のどれかを手持ちに入れている: "+texts.join(", ")));
+    }
+    return $div.get(0);
+}
+
+
+
 function create_svg() {
     return $("<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink'/>");
 }
@@ -82,7 +132,7 @@ function result_to_dom_node(result: IPredictResultNode) {
     svg.addClass("node");
     let y = 0;
     let width = WIDTH * 3;
-    let svg1 = entries_to_dom_node(result.chosen);
+    let svg1 = result_node_to_dom_node(result);
     svg1.setAttribute("y", String(y));
     svg.append(svg1);
     let n = result.children.length;
@@ -127,11 +177,20 @@ function setLineCoordinates(line: Element, x1: number, y1: number, x2: number, y
     line.setAttribute("y2", String(y2));
 }
 
+function result_node_to_dom_node(result: IPredictResultNode) {
+    let svg = entries_to_dom_node(result.chosen);
+    svg.classList.add("entries");
+    svg.setAttribute("data-entries", result.chosen.map((x) => x.id).join(","));
+    svg.setAttribute("data-skipped", result.skipped.map((x) => x.id).join(","));
+    svg.setAttribute("data-starters", result.starters.map((x) => x.id).join(","));
+    svg.setAttribute("data-predenemies", result.predEnemies.map((x) => x.map(y => y.id).join(",")).join(";"));
+    return svg;
+}
+
 function entries_to_dom_node(entries: Entry[]) {
-    let w = WIDTH * 3;
+    let w = WIDTH * entries.length;
     let h = HEIGHT;
-    let svg = create_svg().attr("width", w).attr("height", h).addClass("entries");
-    svg.attr("data-entries", entries.map((x) => x.id).join(","));
+    let svg = create_svg().attr("width", w).attr("height", h);
     let rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     rect.setAttribute('height', String(h));
     rect.setAttribute('width', String(w));
