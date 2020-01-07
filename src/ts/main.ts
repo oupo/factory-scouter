@@ -19,7 +19,7 @@ Togasat.load().then((togasat) => {
 function main(togasat: Togasat) {
     let is_hgss = true;
     let is_open_level = false;
-    let round = 7;
+    let round = 1;
     let num_bonus = 0;
     let startTime = Date.now();
     let res = Predictor.predict(togasat, new PRNG(0), is_hgss, is_open_level, round, num_bonus)[0];
@@ -84,39 +84,44 @@ function main(togasat: Togasat) {
 
 function branch_information(entries: Entry[], skipped: Entry[], starters: Entry[], predEnemies: Entry[][]) {
     let $div =  $("<div/>");
+    let nodes : HTMLElement[] = [];
     for (let e of entries) {
         let texts: string[] = [];
         for (let e2 of starters) {
             if (e.collides_with(e2)) {
-                texts.push("スターターの"+POKEMON_NAMES[e2.pokemon]);
+                texts.push("スターターの"+POKEMON_NAMES[e2.pokemon]+"("+ITEM_NAMES[e2.item]+")");
             }
         }
         for (let i = 0; i < predEnemies.length; i ++) {
             for (let e2 of predEnemies[i]) {
                 if (e.collides_with(e2)) {
-                    texts.push((i+1)+"戦目の"+POKEMON_NAMES[e2.pokemon]);
+                    texts.push((i+1)+"戦目の"+POKEMON_NAMES[e2.pokemon]+"("+ITEM_NAMES[e2.item]+")");
                 }
             }
         }
         if (texts.length > 0) {
-            $div.append($("<div/>").text("以下のいずれも手持ちに入れていない: "+texts.join(", ")));
+            nodes.push($("<div/>").text("以下のいずれも手持ちに入れていない: "+texts.join(", ")).get(0));
         }
     }
     for (let e of skipped) {
         let texts: string[] = [];
         for (let e2 of starters) {
             if (e.collides_with(e2)) {
-                texts.push("スターターの"+POKEMON_NAMES[e2.pokemon]);
+                texts.push("スターターの"+POKEMON_NAMES[e2.pokemon]+"("+ITEM_NAMES[e2.item]+")");
             }
         }
         for (let i = 0; i < predEnemies.length; i ++) {
             for (let e2 of predEnemies[i]) {
                 if (e.collides_with(e2)) {
-                    texts.push((i+1)+"戦目の"+POKEMON_NAMES[e2.pokemon]);
+                    texts.push((i+1)+"戦目の"+POKEMON_NAMES[e2.pokemon]+"("+ITEM_NAMES[e2.item]+")");
                 }
             }
         }
-        $div.append($("<div/>").text("以下のどれかを手持ちに入れている: "+texts.join(", ")));
+        nodes.push($("<div/>").text("以下のどれかを手持ちに入れている: "+texts.join(", ")).get(0));
+    }
+    if (nodes.length > 0) {
+        $div.append($("<div><b>分岐条件</b></div>"));
+        $div.append(nodes);
     }
     return $div.get(0);
 }
