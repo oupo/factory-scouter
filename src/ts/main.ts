@@ -11,12 +11,16 @@ POKEMON_NAMES.forEach((name, i) => {
 });
 
 Togasat.load().then((togasat) => {
-    console.log(togasat.solve([1, 2, 0, -1, 0, -2, 0]));
-    console.log(togasat.solve([1, 0]));
+    console.log(togasat.solve([[1, 2], [-1], [-2]]));
+    console.log(togasat.solve([[1]]));
 });
 
 function main(togasat: Togasat) {
-    let root = result_to_dom_node(Predictor.predict(togasat, new PRNG(0))[0]);
+    let is_hgss = true;
+    let is_open_level = false;
+    let round = 7;
+    let num_bonus = 1;
+    let root = result_to_dom_node(Predictor.predict(togasat, new PRNG(1), is_hgss, is_open_level, round, num_bonus)[0]);
     root.id = "root";
     $("#result-box").empty().append(root);
     $("#result-box svg.entries").mouseenter((e) => {

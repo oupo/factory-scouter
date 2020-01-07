@@ -12,6 +12,7 @@ export class Judger {
     private skipped: Entry[][];
     private nbattles: number;
     private variableCount: number;
+    private variableNames: string[];
     static CHOOSE = [[0, 1, 2], [0, 1, 3], [0, 1, 4], [0, 1, 5], [0, 2, 3], [0, 2, 4], [0, 2, 5], [0, 3, 4], [0, 3, 5], [0, 4, 5], [1, 2, 3], [1, 2, 4], [1, 2, 5], [1, 3, 4], [1, 3, 5], [1, 4, 5], [2, 3, 4], [2, 3, 5], [2, 4, 5], [3, 4, 5]];
 
     constructor(togasat: Togasat, starters: Entry[], enemies: Entry[][], skipped: Entry[][]) {
@@ -20,6 +21,7 @@ export class Judger {
         this.enemies = enemies;
         this.skipped = skipped;
         this.nbattles = this.enemies.length;
+        this.variableNames = [];
         this.variableCount = 0;
     }
 
@@ -245,17 +247,12 @@ export class Judger {
                 }
             }
         }
-
-        let cnf = [];
-        for (let clause of clauses) {
-            cnf.push(...clause);
-            cnf.push(0);
-        }
-        return this.togasat.solve(cnf) == 0;
+        return this.togasat.solve(clauses) == 0;
     }
 
     var(name: string): Variable {
-        return ++this.variableCount;
+        this.variableNames[++this.variableCount] = name;
+        return this.variableCount;
     }
 
     not(variable: Variable) {

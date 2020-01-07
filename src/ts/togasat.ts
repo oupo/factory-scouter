@@ -14,7 +14,36 @@ export class Togasat {
         });
     }
 
-    public solve(cnf: number[]) {
+    public solve(clauses: number[][]) {
+        let cnf: number[] = [];
+        let fixed: boolean[] = [];
+        // varと-varが両方節としてあったらそこでunsatを返す
+        // varが二回以上節として登場したら一回だけにする
+        for (let clause of clauses) {
+            if (clause.length == 1) {
+                let variable = clause[0];
+                if (variable > 0) {
+                    if (fixed[variable] === false) {
+                        return 1;
+                    } else if (fixed[variable] === true) {
+                        continue;
+                    } else {
+                        fixed[variable] = true;
+                    }
+                } else {
+                    variable = -variable;
+                    if (fixed[variable] === true) {
+                        return 1;
+                    } else if (fixed[variable] === false) {
+                        continue;
+                    } else {
+                        fixed[variable] = false;
+                    }
+                }
+            }
+            cnf.push(...clause);
+            cnf.push(0);
+        }
         let array = new Int32Array(cnf);
         let ptr = this.arrayToPtr(array);
         let result = this.module._solve(ptr, cnf.length);
