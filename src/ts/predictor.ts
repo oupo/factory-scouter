@@ -92,12 +92,23 @@ export class OneEnemyPredictor {
         let [prngp, x] = FactoryHelper.choose_entry(prng, this.rank);
         if (x.collides_within([...this.unchoosable, ...chosen, ...skipped])) {
             return this.predict0(prngp, skipped, chosen);
-        } else if (!x.collides_within(this.maybe_players)) {
+        } else if (!x.collides_within(this.maybe_players) || this.fullSkipped(skipped)) {
             return this.predict0(prngp, skipped, [...chosen, x]);
         } else {
             let result1 = this.predict0(prngp, skipped, [...chosen, x]);
             let result2 = this.predict0(prngp, [...skipped, x], chosen);
             return [...result1, ...result2];
         }
+    }
+
+    // スキップ済みのエントリーの中に異なるポケモンが3匹、異なるアイテムが3個あればそれ以上新しいスキップエントリーは追加不能
+    private fullSkipped(skipped: Entry[]) {
+        let skippedPokes: number[] = [];
+        let skippedItems: number[] = [];
+        for (let e of skipped) {
+            if (skippedPokes.indexOf(e.pokemon) === -1) skippedPokes.push(e.pokemon);
+            if (skippedItems.indexOf(e.item) === -1) skippedItems.push(e.item);
+        }
+        return skippedPokes.length >= NPARTY && skippedItems.length >= NPARTY;
     }
 }

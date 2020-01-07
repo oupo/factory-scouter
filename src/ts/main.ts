@@ -19,9 +19,12 @@ Togasat.load().then((togasat) => {
 function main(togasat: Togasat) {
     let is_hgss = true;
     let is_open_level = false;
-    let round = 1;
+    let round = 7;
     let num_bonus = 0;
+    let startTime = Date.now();
     let res = Predictor.predict(togasat, new PRNG(0), is_hgss, is_open_level, round, num_bonus)[0];
+    let time = Date.now() - startTime;
+    console.log("prediction time: "+time+" msec");
     let root = result_to_dom_node(res);
     root.id = "root";
     $("#result-box").empty()
