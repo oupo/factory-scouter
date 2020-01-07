@@ -90,7 +90,7 @@ export class OneEnemyPredictor {
             return [[prngp, chosen, skipped]];
         }
         let [prngp, x] = FactoryHelper.choose_entry(prng, this.rank);
-        if (x.collides_within([...this.unchoosable, ...chosen, ...skipped])) {
+        if (x.collides_within([...this.unchoosable, ...chosen]) || skipped.indexOf(x) >= 0) {
             return this.predict0(prngp, skipped, chosen);
         } else if (!x.collides_within(this.maybe_players) || this.fullSkipped(skipped)) {
             return this.predict0(prngp, skipped, [...chosen, x]);
