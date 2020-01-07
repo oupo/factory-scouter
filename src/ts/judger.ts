@@ -133,7 +133,7 @@ export class Judger {
                 let clause: Variable[] = [];
                 clauses.push(clause);
                 clause.push(this.not(starter[i]));
-                if (y in Judger.CHOOSE[i]) {
+                if (Judger.CHOOSE[i].indexOf(y) >= 0) {
                     clause.push(starter_choose[y]);
                 } else {
                     clause.push(this.not(starter_choose[y]));
@@ -253,6 +253,10 @@ export class Judger {
     var(name: string): Variable {
         this.variableNames[++this.variableCount] = name;
         return this.variableCount;
+    }
+
+    varToString(variable: Variable) {
+        return variable > 0 ? this.variableNames[variable] : "-" + this.variableNames[-variable];
     }
 
     not(variable: Variable) {
