@@ -1,0 +1,6 @@
+node_modules
+*.cnf
+junk/factory-data.rb
+junk/*.txt
+.cache
+dist
