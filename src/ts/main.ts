@@ -19,7 +19,7 @@ Togasat.load().then((togasat) => {
 function main(togasat: Togasat) {
     let is_hgss = true;
     let is_open_level = false;
-    let round = 1;
+    let round = 2;
     let num_bonus = 0;
     let startTime = Date.now();
     let res = Predictor.predict(togasat, new PRNG(0), is_hgss, is_open_level, round, num_bonus)[0];

@@ -16,8 +16,7 @@ export class MyJudger {
     }
 
     static judge(starters: Entry[], enemies: Entry[][], skipped: Entry[][]) {
-        console.log(enemies.length);
-        console.log(enemies[enemies.length - 1].map(x => x.id));
+        console.log(enemies.length+" "+enemies[enemies.length - 1].map(x => x.id).join(","));
         let res = new MyJudger(starters, enemies, skipped).judge();
         console.log(res);
         return res;
@@ -44,7 +43,7 @@ export class MyJudger {
                 }
             }
         }
-        console.log(works.length > 0 ? works.map(ws => "["+ws.map(w => w.toString()).join(", ")+"]").join(";") : "(empty)");
+        console.log(works.length > 0 ? works.map(ws => "["+ws.map(w => w.toString()).join(", ")+"]").join("; ") : "(empty)");
         return undefined;
     }
 

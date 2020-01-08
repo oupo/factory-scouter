@@ -4,7 +4,8 @@
   "description": "",
   "main": ".eslintrc.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npx parcel src/*.html --open",
+    "build": "npx parcel build src/*.html"
   },
   "repository": {
     "type": "git",
@@ -12,7 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/oupo/factory-scouter/issues"
   },
