@@ -16,9 +16,7 @@ export class MyJudger {
     }
 
     static judge(starters: Entry[], enemies: Entry[][], skipped: Entry[][]) {
-        console.log(enemies.length+" "+enemies[enemies.length - 1].map(x => x.id).join(","));
         let res = new MyJudger(starters, enemies, skipped).judge();
-        console.log("MyJudge result: "+res);
         return res;
     }
 
@@ -29,7 +27,6 @@ export class MyJudger {
         let assigner = new Assigner();
         works = this.assign_loop(works, assigner);
         if (works === null) return false;
-        console.log(works.length > 0 ? works.map(ws => "["+ws.map(w => w.toString()).join(", ")+"]").join("; ") : "(empty)");
         let res = this.assume(works, assigner, antiworks);
         return res;
     }
@@ -51,18 +48,25 @@ export class MyJudger {
 
     // 持っているantiworkはなるべく少なく、持つとしてもtailが大きい方をとるように貪欲
     ok(works: Work[], antiworks: Work[]) {
+        console.log("ok(): works = ["+works.map(x => String(x)).join(", ")+"]");
         let entries = works.filter(w => w.head == 0).map(w => w.entry);
         let entries2 = Util.arrayDiff(this.starters, entries);
-        let holding_antiworks: Work[] = entries2.map(e => this.antiworks_tail(antiworks, e, 0));
-        entries2 = Util.iota(entries2.length).sort((i, j) => this.tail_or_inf(holding_antiworks[j]) - this.tail_or_inf(holding_antiworks[i])).map(i => entries2[i]).slice(0, NPARTY - entries.length);
-        holding_antiworks = Util.compact(holding_antiworks);
+        let entries2_antiworks: Work[] = entries2.map(e => this.antiworks_tail(antiworks, e, 0));
+        let sorted = Util.iota(entries2.length).sort((i, j) => this.tail_or_inf(entries2_antiworks[j]) - this.tail_or_inf(entries2_antiworks[i]));
+        entries2 = sorted.map(i => entries2[i]).slice(0, NPARTY - entries.length);
 
         let player = [...entries, ...entries2];
+        let holding_antiworks = Util.compact(player.map((e) => this.antiworks_tail(antiworks, e, 0)));
+        console.log("holding_antiworks = ["+holding_antiworks.map(x => String(x)).join(", ")+"]");
+
+        console.log("player=["+player.map(x=>x.id).join(",")+"]");
         for (let i = 1; i < this.nbattles; i ++) {
+            console.log("i="+i+", holding_antiworks = ["+holding_antiworks.map(x => x.toString()).join(", ")+"]");
             if (holding_antiworks.some(w => w.tail === i)) return false;
             let [throws, pickup] = this.greedy_exchange(i, player, works, antiworks, holding_antiworks);
+            console.log(throws ? [throws.id, pickup.id] : "(non exchange)");
             let idx = holding_antiworks.findIndex(w => w.entry === throws);
-            if (idx >= 0) holding_antiworks = holding_antiworks.splice(idx, 1);
+            if (idx >= 0) holding_antiworks.splice(idx, 1);
             let antiwork = antiworks.find(w => w.entry === pickup && w.head === i);
             if (antiwork !== undefined) {
                 holding_antiworks.push(antiwork);
@@ -76,15 +80,17 @@ export class MyJudger {
 
     greedy_exchange(i: number, player: Entry[], works: Work[], antiworks: Work[], holding_antiworks: Work[]): [Entry, Entry] {
         let current_works = works.filter(w => w.range.indexOf(i) >= 0 && w.head != i);
+        console.log("player="+player.map(x=>x.id).join(","));
+        console.log("current_works="+current_works.join(","));
         let throwable = Util.arrayDiff(player, current_works.map(w => w.entry));
         let throws = Util.minBy(throwable, e => this.antiwork_tail(holding_antiworks, e));
+        console.log(throwable.map(e => [e.id, this.antiwork_tail(holding_antiworks, e)].join(", ")).join("; "));
         let pickups = works.filter(w => w.head == i).map(w => w.entry);
         if (pickups.length > 0) {
             let pickup = pickups[0];
             return [throws, pickup];
         } else {
             let enemy = this.enemies[i - 1];
-            if (!enemy) debugger;
             let pickup = Util.maxBy(enemy, e => this.tail_or_inf(this.antiworks_tail(antiworks, e, i)));
             let throwsTail = this.tail_or_inf(holding_antiworks.find(w => w.entry === throws));
             let pickupTail = this.tail_or_inf(this.antiworks_tail(antiworks, pickup, i));
@@ -182,7 +188,7 @@ export class MyJudger {
                             antiworks.push(new Work(entry2, y + 1, x));
                         }
                     }
-                };
+                }
             }
         }
 		return antiworks;

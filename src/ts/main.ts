@@ -13,19 +13,13 @@ POKEMON_NAMES.forEach((name, i) => {
     POKEMON_NAME_TO_ID[name] = i;
 });
 
-Togasat.load().then((togasat) => {
-    console.log(togasat.solve([[1, 2], [-1], [-2]]));
-    console.log(togasat.solve([[1]]));
-});
-
 function main(togasat: Togasat) {
     let starters = [214, 227, 209, 199, 171, 173].map(x => ALL_ENTRIES[x]);
-    let enemies = [[144,146,20],[208,242,175],[54,63,114],[247,182,249]].map(x => x.map(y => ALL_ENTRIES[y]));
-    let skipped = [[],[],[],[]].map(x => x.map(y => ALL_ENTRIES[y]));
+    let enemies = [[144,146,20],[208,242,175],[54,63,114],[247,182,249],[216,186,164],[240,227,241],[314,290,336]].map(x => x.map(y => ALL_ENTRIES[y]));
+    let skipped = [[],[],[],[],[],[187,193,196],[347]].map(x => x.map(y => ALL_ENTRIES[y]));
     console.log("MyJudger: "+MyJudger.judge(starters, enemies, skipped));
     console.log("Judger: "+Judger.judge(togasat, starters, enemies, skipped));
     return;
-
     let is_hgss = true;
     let is_open_level = false;
     let round = 2;
