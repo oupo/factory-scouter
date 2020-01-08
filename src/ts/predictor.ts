@@ -44,16 +44,14 @@ export class Predictor {
             let [prngp, chosen, skippedp] = result;
             let enemiesp = [...enemies, chosen];
             let skippedpp = [...skipped, skippedp];
-            let res1 = MyJudger.judge(starters, enemiesp, skippedpp);
-            let res2 = Judger.judge(this.togasat, starters, enemiesp, skippedpp);
-            if (res1 != res2) {
-                debugger;
-            }
-            if (res2) {
+            let res = MyJudger.judge(starters, enemiesp, skippedpp);
+            //let res = Judger.judge(this.togasat, starters, enemiesp, skippedpp);
+            //if (res1 != res2) debugger;
+            if (res) {
                 let children = this.predict0(prngp, enemiesp, skippedpp, starters, trainers);
                 return { prng: prngp, chosen: chosen, skipped: skippedp, starters: starters, predEnemies: enemies, children: children };
             } else {
-                return { prng: prngp, chosen: chosen, skipped: skippedp, starters: starters, predEnemies: enemies, children: [] };
+                return null;
             }
         }));
 
