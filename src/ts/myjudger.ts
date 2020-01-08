@@ -79,7 +79,7 @@ export class MyJudger {
     }
 
     greedy_exchange(i: number, player: Entry[], works: Work[], antiworks: Work[], holding_antiworks: Work[]): [Entry, Entry] {
-        let current_works = works.filter(w => w.range.indexOf(i) >= 0 && w.head != i);
+        let current_works = works.filter(w => w.range.indexOf(i + 1) >= 0 && w.head != i);
         console.log("player="+player.map(x=>x.id).join(","));
         console.log("current_works="+current_works.join(","));
         let throwable = Util.arrayDiff(player, current_works.map(w => w.entry));
@@ -129,6 +129,7 @@ export class MyJudger {
         while (updated) {
             updated = false;
             for (let i = 0; i < works.length;) {
+                console.log(works[i].join(","));
                 let ws = works[i].filter(w => assigner.assignable(w));
                 if (ws.length !== works[i].length) updated = true;
                 works[i] = ws;
@@ -143,6 +144,8 @@ export class MyJudger {
                 }
             }
         }
+        console.log("assign_loop: ");
+        console.log(works);
         return works;
     }
 
@@ -168,6 +171,7 @@ export class MyJudger {
                 works.push(w);
             }
         }
+        console.log("works=["+works.map(ws => "["+ws.map(w => w.toString()).join(", ")+"]")+"]");
 		return works;
 	}
 
@@ -198,7 +202,7 @@ export class MyJudger {
 class Assigner {
     assigned: Work[];
     constructor(assigned: Work[] = []) {
-        this.assigned = [];
+        this.assigned = assigned;
     }
 
     clone() {

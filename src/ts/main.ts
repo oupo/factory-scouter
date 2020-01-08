@@ -17,6 +17,17 @@ function main(togasat: Togasat) {
     let starters = [214, 227, 209, 199, 171, 173].map(x => ALL_ENTRIES[x]);
     let enemies = [[144,146,20],[208,242,175],[54,63,114],[247,182,249],[216,186,164],[240,227,241],[314,290,336]].map(x => x.map(y => ALL_ENTRIES[y]));
     let skipped = [[],[],[],[],[],[187,193,196],[347]].map(x => x.map(y => ALL_ENTRIES[y]));
+    //console.log("MyJudger: "+MyJudger.judge(starters, enemies, skipped));
+    //console.log("Judger: "+Judger.judge(togasat, starters, enemies, skipped));
+    enemies = [[144,146,20],[208,242,175],[54,63,114],[247,182,249],[216,186,164],[240,193,241]].map(x => x.map(y => ALL_ENTRIES[y]));
+    skipped = [[],[],[],[],[],[227,187,196]].map(x => x.map(y => ALL_ENTRIES[y]));
+    //console.log("MyJudger: "+MyJudger.judge(starters, enemies, skipped));
+    //console.log("Judger: "+Judger.judge(togasat, starters, enemies, skipped));
+    enemies = [[144,146,20],[208,242,175],[54,63,114],[247,182,249],[186,164,178],[244,168,179],[299,290,294]].map(x => x.map(y => ALL_ENTRIES[y]));
+    skipped = [[],[],[],[],[216],[247],[275,296]].map(x => x.map(y => ALL_ENTRIES[y]));
+    console.log(starters.map(e => e.id + " " + POKEMON_NAMES[e.pokemon] + " " + ITEM_NAMES[e.item]).join(","));
+    console.log(enemies.map(x => "["+x.map(e => e.id + " " + POKEMON_NAMES[e.pokemon] + " " + ITEM_NAMES[e.item]).join(",")+"]").join("\n"));
+    console.log(skipped.map(x => "["+x.map(e => e.id + " " + POKEMON_NAMES[e.pokemon] + " " + ITEM_NAMES[e.item]).join(",")+"]").join("\n"));
     console.log("MyJudger: "+MyJudger.judge(starters, enemies, skipped));
     console.log("Judger: "+Judger.judge(togasat, starters, enemies, skipped));
     return;
