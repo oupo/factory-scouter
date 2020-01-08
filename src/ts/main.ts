@@ -5,6 +5,8 @@ import { IPredictResultNode, Predictor } from './predictor';
 import { PRNG } from './prng';
 import { Togasat } from './togasat';
 import { Util } from './util';
+import { Judger } from './judger';
+import { MyJudger } from './myjudger';
 
 let POKEMON_NAME_TO_ID: { [key: string]: number; } = {};
 POKEMON_NAMES.forEach((name, i) => {
@@ -17,6 +19,13 @@ Togasat.load().then((togasat) => {
 });
 
 function main(togasat: Togasat) {
+    let starters = [214, 227, 209, 199, 171, 173].map(x => ALL_ENTRIES[x]);
+    let enemies = [[144,146,20],[208,242,175],[54,63,114],[247,182,249]].map(x => x.map(y => ALL_ENTRIES[y]));
+    let skipped = [[],[],[],[]].map(x => x.map(y => ALL_ENTRIES[y]));
+    console.log("MyJudger: "+MyJudger.judge(starters, enemies, skipped));
+    console.log("Judger: "+Judger.judge(togasat, starters, enemies, skipped));
+    return;
+
     let is_hgss = true;
     let is_open_level = false;
     let round = 2;
