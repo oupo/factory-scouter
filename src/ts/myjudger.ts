@@ -23,7 +23,7 @@ export class MyJudger {
     judge() {
         let works = this.gen_works();
         let antiworks = this.gen_antiworks();
-        console.log("antiworks: "+antiworks.map(x => x.toString()).join(", "));
+        //console.log("antiworks: "+antiworks.map(x => x.toString()).join(", "));
         let assigner = new Assigner();
         works = this.assign_loop(works, assigner);
         if (works === null) return false;
@@ -48,7 +48,7 @@ export class MyJudger {
 
     // 持っているantiworkはなるべく少なく、持つとしてもtailが大きい方をとるように貪欲
     ok(works: Work[], antiworks: Work[]) {
-        console.log("ok(): works = ["+works.map(x => String(x)).join(", ")+"]");
+        //console.log("ok(): works = ["+works.map(x => String(x)).join(", ")+"]");
         let entries = works.filter(w => w.head == 0).map(w => w.entry);
         let entries2 = Util.arrayDiff(this.starters, entries);
         let entries2_antiworks: Work[] = entries2.map(e => this.antiworks_tail(antiworks, e, 0));
@@ -57,14 +57,14 @@ export class MyJudger {
 
         let player = [...entries, ...entries2];
         let holding_antiworks = Util.compact(player.map((e) => this.antiworks_tail(antiworks, e, 0)));
-        console.log("holding_antiworks = ["+holding_antiworks.map(x => String(x)).join(", ")+"]");
+        //console.log("holding_antiworks = ["+holding_antiworks.map(x => String(x)).join(", ")+"]");
 
-        console.log("player=["+player.map(x=>x.id).join(",")+"]");
+        //console.log("player=["+player.map(x=>x.id).join(",")+"]");
         for (let i = 1; i < this.nbattles; i ++) {
-            console.log("i="+i+", holding_antiworks = ["+holding_antiworks.map(x => x.toString()).join(", ")+"]");
+            //console.log("i="+i+", holding_antiworks = ["+holding_antiworks.map(x => x.toString()).join(", ")+"]");
             if (holding_antiworks.some(w => w.tail === i)) return false;
             let [throws, pickup] = this.greedy_exchange(i, player, works, antiworks, holding_antiworks);
-            console.log(throws ? [throws.id, pickup.id] : "(non exchange)");
+            //console.log(throws ? [throws.id, pickup.id] : "(non exchange)");
             let idx = holding_antiworks.findIndex(w => w.entry === throws);
             if (idx >= 0) holding_antiworks.splice(idx, 1);
             let antiwork = antiworks.find(w => w.entry === pickup && w.head === i);
@@ -79,12 +79,12 @@ export class MyJudger {
     }
 
     greedy_exchange(i: number, player: Entry[], works: Work[], antiworks: Work[], holding_antiworks: Work[]): [Entry, Entry] {
-        let current_works = works.filter(w => w.range.indexOf(i + 1) >= 0 && w.head != i);
-        console.log("player="+player.map(x=>x.id).join(","));
-        console.log("current_works="+current_works.join(","));
+        let current_works = works.filter(w => w.head <= i + 1 && i + 1 <= w.tail);
+        //console.log("player="+player.map(x=>x.id).join(","));
+        //console.log("current_works="+current_works.join(","));
         let throwable = Util.arrayDiff(player, current_works.map(w => w.entry));
         let throws = Util.minBy(throwable, e => this.antiwork_tail(holding_antiworks, e));
-        console.log(throwable.map(e => [e.id, this.antiwork_tail(holding_antiworks, e)].join(", ")).join("; "));
+        //console.log(throwable.map(e => [e.id, this.antiwork_tail(holding_antiworks, e)].join(", ")).join("; "));
         let pickups = works.filter(w => w.head == i).map(w => w.entry);
         if (pickups.length > 0) {
             let pickup = pickups[0];
@@ -129,7 +129,7 @@ export class MyJudger {
         while (updated) {
             updated = false;
             for (let i = 0; i < works.length;) {
-                console.log(works[i].join(","));
+                //console.log(works[i].join(","));
                 let ws = works[i].filter(w => assigner.assignable(w));
                 if (ws.length !== works[i].length) updated = true;
                 works[i] = ws;
@@ -144,8 +144,8 @@ export class MyJudger {
                 }
             }
         }
-        console.log("assign_loop: ");
-        console.log(works);
+        //console.log("assign_loop: ");
+        //console.log(works);
         return works;
     }
 
@@ -171,7 +171,7 @@ export class MyJudger {
                 works.push(w);
             }
         }
-        console.log("works=["+works.map(ws => "["+ws.map(w => w.toString()).join(", ")+"]")+"]");
+        //console.log("works=["+works.map(ws => "["+ws.map(w => w.toString()).join(", ")+"]")+"]");
 		return works;
 	}
 
@@ -272,7 +272,7 @@ class Work {
         this.entry = entry;
         this.head = head;
         this.tail = tail;
-        this.range = Util.range(head, tail);
+        this.range = Util.range(head, tail - 1);
     }
 
     toString() {

@@ -154,18 +154,6 @@ export class Judger {
             }
         }
 
-        // 拾うポケモンは1匹以下
-        for (let x = 0; x < this.nbattles - 2; x++) {
-            for (let y = 0; y < NPARTY; y++) {
-                for (let z = y + 1; z < NPARTY; z++) {
-                    let clause: Variable[] = [];
-                    clauses.push(clause)
-                    clause.push(this.not(pickup[x][y]));
-                    clause.push(this.not(pickup[x][z]));
-                }
-            }
-        }
-
         // 拾う場合、捨てるポケモンは少なくとも1匹
         for (let x = 0; x < this.nbattles - 2; x++) {
             for (let y = 0; y < NPARTY; y++) {
@@ -195,13 +183,24 @@ export class Judger {
 
         // 捨てる場合、それをその時点で持っていなければならない
         for (let x = 0; x < this.nbattles - 2; x++) {
-            throws.push([]);
             for (let y = 0; y < NSTARTERS; y++) {
                 clauses.push([this.not(throws[x][y]), player_has_starter[x + 1][y]]);
             }
             for (let y = 0; y < x; y++) {
                 for (let z = 0; z < NPARTY; z++) {
                     clauses.push([this.not(throws[x][NSTARTERS + NPARTY * y + z]), player_has[x + 1][y][z]]);
+                }
+            }
+        }
+
+        // 捨てる場合、拾うポケモンが1匹以上
+        for (let x = 0; x < this.nbattles - 2; x++) {
+            for (let y = 0; y < NSTARTERS; y++) {
+                clauses.push([this.not(throws[x][y]), ...pickup[x]]);
+            }
+            for (let y = 0; y < x; y++) {
+                for (let z = 0; z < NPARTY; z++) {
+                    clauses.push([this.not(throws[x][NSTARTERS + NPARTY * y + z]), ...pickup[x]]);
                 }
             }
         }
@@ -247,6 +246,18 @@ export class Judger {
                 }
             }
         }
+
+/*        let str = "p cnf "+this.variableCount+" "+clauses.length+"\n";
+        for (let clause of clauses) {
+            str += [...clause.map((x) => this.varToString(x)), 0].join(" ") + "\n";
+        }
+        console.log(str);
+        let res = [-1, -2, -3, -4, -5, -6, -7, -8, -9, -10, -11, -12, -13, -14, -15, -16, -17, -18, 19, -20, -21, -22, 23, -24, 25, 26, -27, -28, 29, -30, 31, 32, -33, -34, -35, -36, -37, -38, -39, -40, -41, -42, -43, -44, -45, -46, -47, -48, -49, 50, -51, 52, 53, -54, -55, -56, -57, -58, -59, -60, -61, -62, -63, -64, -65, -66, -67, -68, -69, -70, -71, -72, -73, -74];
+        str = "";
+        for (let r of res) {
+            str += this.varToString(r) + "\n";
+        }
+        console.log(str); */
         return this.togasat.solve(clauses) == 0;
     }
 
